@@ -1,4 +1,6 @@
 import z from 'zod';
+import * as projetoModel from '../models/projeto.model.js';
+import * as conviteController from '../controllers/convite.controller.js';
 
 const projetoSchema = z.object({
   titulo: z
@@ -7,7 +9,9 @@ const projetoSchema = z.object({
     .min(1, 'Mínimo 1 caractere')
     .max(100, 'Máximo 100 caracteres'),
   descricao: z.preprocess((e) => {
-    if (e === undefined || e === null) return null;
+    if (e === undefined || e === null) {
+      return null;
+    }
 
     if (typeof e === 'string') {
       const trimmed = e.trim();
@@ -26,4 +30,21 @@ const projetoSchema = z.object({
 
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
+
+  const projetoId = await projetoModel.criar({
+    titulo: projeto.titulo,
+    descricao: projeto.descricao,
+    criador_id: usuario.id,
+  });
+
+  for (const integrante of projeto.integrantes) {
+    await conviteController.criarConvite({
+      destinatario_id: integrante.id,
+      nivel_acesso_id: integrante.nivel_acesso_id,
+      projeto_id: projetoId,
+      remetente_id: usuario.id,
+    });
+  }
+
+  return { projetoId, ...projeto };
 }
