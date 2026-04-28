@@ -682,13 +682,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '404':
-          description: Integrante ou nível de acesso inexistente
+          description: Requisição mal formulada, ou ID de integrante inválido, ou ID de nível de acesso inválido
           content:
             application/json:
               schema:

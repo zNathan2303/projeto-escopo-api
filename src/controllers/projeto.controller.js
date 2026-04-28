@@ -3,6 +3,8 @@ import * as projetoModel from '../models/projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
 import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
+import BadRequestError from '../errors/BadRequestError.js';
+import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 
 const projetoSchema = z.object({
   titulo: z
@@ -24,12 +26,23 @@ const projetoSchema = z.object({
           'O ID de nível de acesso de um integrante deve ser um número',
         ),
       }),
+      'Integrantes deve ser um array',
     )
     .optional(),
 });
 
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
+
+  const niveisAcessoID = await obterIDsDeNiveisAcesso(knex);
+
+  const algumIntegranteInvalido = projeto.integrantes.some(
+    (integrante) => !niveisAcessoID.includes(integrante.nivel_acesso_id),
+  );
+
+  if (algumIntegranteInvalido) {
+    throw new BadRequestError('Algum ID de nível de acesso enviado é inválido');
+  }
 
   await knex.transaction(async (trx) => {
     const projetoId = await projetoModel.criar(
@@ -45,7 +58,15 @@ export async function criarProjeto(requestBody, usuario) {
       return;
     }
 
-    const convites = projeto.integrantes.map((integrante) => {
+    const integrantes = projeto.integrantes.filter(
+      (integrante) => integrante.id !== usuario.id,
+    );
+
+    if (integrantes.length === 0) {
+      return;
+    }
+
+    const convites = integrantes.map((integrante) => {
       return {
         projeto_id: projetoId,
         destinatario_id: integrante.id,
@@ -54,6 +75,14 @@ export async function criarProjeto(requestBody, usuario) {
       };
     });
 
-    await conviteModel.criarVarios(convites, trx);
+    try {
+      await conviteModel.criarVarios(convites, trx);
+    } catch (error) {
+      if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+        throw new BadRequestError('Algum ID de integrante enviado é inválido');
+      }
+
+      throw error;
+    }
   });
 }
