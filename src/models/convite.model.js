@@ -15,3 +15,9 @@ export async function criar({
 
   return id;
 }
+
+export async function criarVarios(convites, db = knex) {
+  const IDs = await db('convite').insert(convites);
+
+  return IDs;
+}

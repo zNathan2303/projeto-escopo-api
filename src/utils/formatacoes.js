@@ -4,3 +4,16 @@ export function formatarErrosZod(errosZod) {
     mensagem: erro.message,
   }));
 }
+
+export function transformarUndefinedOuStringVaziaEmNull(elemento) {
+  if (elemento === undefined || elemento === null) {
+    return null;
+  }
+
+  if (typeof elemento === 'string') {
+    const trimmed = elemento.trim();
+    return trimmed === '' ? null : trimmed;
+  }
+
+  return elemento;
+}
