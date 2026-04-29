@@ -4,6 +4,7 @@ import * as conviteModel from '../models/convite.model.js';
 import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import NotFoundError from '../errors/NotFoundError.js';
 import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 
 const projetoSchema = z.object({
@@ -97,6 +98,10 @@ export async function obterProjetosQueUsuarioEsta(usuario) {
 
 export async function obterDetalhesDeUmProjeto(id, usuario) {
   const projeto = await projetoModel.obterDetalhes(id, usuario.id);
+
+  if (!projeto) {
+    throw new NotFoundError('Projeto não encontrado');
+  }
 
   return projeto;
 }

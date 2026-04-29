@@ -10,8 +10,8 @@ export async function criar({ titulo, descricao, criador_id }, db = knex) {
   return id;
 }
 
-export async function obterTodosQueUsuarioEsta(usuarioId, db = knex) {
-  const projetosComDuplicatas = await db('projeto')
+export async function obterTodosQueUsuarioEsta(usuarioId) {
+  const projetosComDuplicatas = await knex('projeto')
     .join('usuario_projeto as up_user', 'projeto.id', 'up_user.projeto_id')
     .where('up_user.usuario_id', usuarioId)
     .join('usuario_projeto as up', 'projeto.id', 'up.projeto_id')
@@ -48,18 +48,29 @@ export async function obterTodosQueUsuarioEsta(usuarioId, db = knex) {
   return Array.from(projetosMap.values());
 }
 
-export async function obterDetalhes(projetoId, usuarioId, db = knex) {
-  const projeto = db('projeto as p')
+export async function obterDetalhes(projetoId, usuarioId) {
+  const projeto = await knex('projeto as p')
     .where('p.id', projetoId)
-    .join('usuario as u')
+    .andWhere('p.criador_id', usuarioId)
+    .join('usuario as u', 'u.id', 'p.criador_id')
     .select(
       'p.id',
       'p.titulo',
       'p.descricao',
       'p.status',
       'p.data_criacao',
-      'p.criador_id',
-    );
+      'u.nome as nome_responsavel',
+      knex.raw(`
+        (
+          SELECT MAX(dv.criado_em)
+          FROM categoria c
+          JOIN documento d ON d.categoria_id = c.id
+          JOIN documento_versao dv ON dv.documento_id = d.id
+          WHERE c.projeto_id = p.id
+        ) as ultima_atualizacao
+      `),
+    )
+    .first();
 
   return projeto;
 }

@@ -750,20 +750,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjetoDetail'
-        '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '401':
           description: Não autenticado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
