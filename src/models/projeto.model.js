@@ -47,3 +47,19 @@ export async function obterTodosQueUsuarioEsta(usuarioId, db = knex) {
 
   return Array.from(projetosMap.values());
 }
+
+export async function obterDetalhes(projetoId, usuarioId, db = knex) {
+  const projeto = db('projeto as p')
+    .where('p.id', projetoId)
+    .join('usuario as u')
+    .select(
+      'p.id',
+      'p.titulo',
+      'p.descricao',
+      'p.status',
+      'p.data_criacao',
+      'p.criador_id',
+    );
+
+  return projeto;
+}

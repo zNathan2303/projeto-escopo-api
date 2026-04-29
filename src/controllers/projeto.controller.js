@@ -94,3 +94,9 @@ export async function obterProjetosQueUsuarioEsta(usuario) {
 
   return projetos;
 }
+
+export async function obterDetalhesDeUmProjeto(id, usuario) {
+  const projeto = await projetoModel.obterDetalhes(id, usuario.id);
+
+  return projeto;
+}
