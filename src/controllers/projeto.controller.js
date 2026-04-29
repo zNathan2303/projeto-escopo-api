@@ -34,15 +34,7 @@ const projetoSchema = z.object({
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
 
-  const niveisAcessoID = await obterIDsDeNiveisAcesso(knex);
-
-  const algumIntegranteInvalido = projeto.integrantes.some(
-    (integrante) => !niveisAcessoID.includes(integrante.nivel_acesso_id),
-  );
-
-  if (algumIntegranteInvalido) {
-    throw new BadRequestError('Algum ID de nível de acesso enviado é inválido');
-  }
+  const niveisAcessoIDs = await obterIDsDeNiveisAcesso(knex);
 
   await knex.transaction(async (trx) => {
     const projetoId = await projetoModel.criar(
@@ -66,6 +58,16 @@ export async function criarProjeto(requestBody, usuario) {
       return;
     }
 
+    const algumIntegranteInvalido = projeto.integrantes.some(
+      (integrante) => !niveisAcessoIDs.includes(integrante.nivel_acesso_id),
+    );
+
+    if (algumIntegranteInvalido) {
+      throw new BadRequestError(
+        'Algum ID de nível de acesso enviado é inválido',
+      );
+    }
+
     const convites = integrantes.map((integrante) => {
       return {
         projeto_id: projetoId,
@@ -85,4 +87,10 @@ export async function criarProjeto(requestBody, usuario) {
       throw error;
     }
   });
+}
+
+export async function obterProjetosQueUsuarioEsta(usuario) {
+  const projetos = await projetoModel.obterTodosQueUsuarioEsta(usuario.id);
+
+  return projetos;
 }

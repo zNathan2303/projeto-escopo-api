@@ -16,4 +16,12 @@ router.post(
   },
 );
 
+router.get('/projetos', validarToken, async (req, res) => {
+  const projetos = await projetoController.obterProjetosQueUsuarioEsta(
+    req.usuario,
+  );
+
+  res.status(200).json(projetos);
+});
+
 export default router;
