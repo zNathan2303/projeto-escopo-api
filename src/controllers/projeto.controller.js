@@ -23,9 +23,7 @@ const projetoSchema = z.object({
         id: z
           .number('O ID de um integrante deve ser um número')
           .positive('O ID de um integrante deve ser positivo'),
-        nivel_acesso_id: z.number(
-          'O ID de nível de acesso de um integrante deve ser um número',
-        ),
+        nivel_acesso_id: z.number('O ID de nível de acesso de um integrante deve ser um número'),
       }),
       'Integrantes deve ser um array',
     )
@@ -51,9 +49,7 @@ export async function criarProjeto(requestBody, usuario) {
       return;
     }
 
-    const integrantes = projeto.integrantes.filter(
-      (integrante) => integrante.id !== usuario.id,
-    );
+    const integrantes = projeto.integrantes.filter((integrante) => integrante.id !== usuario.id);
 
     if (integrantes.length === 0) {
       return;
@@ -64,9 +60,7 @@ export async function criarProjeto(requestBody, usuario) {
     );
 
     if (algumIntegranteInvalido) {
-      throw new BadRequestError(
-        'Algum ID de nível de acesso enviado é inválido',
-      );
+      throw new BadRequestError('Algum ID de nível de acesso enviado é inválido');
     }
 
     const convites = integrantes.map((integrante) => {
@@ -90,8 +84,8 @@ export async function criarProjeto(requestBody, usuario) {
   });
 }
 
-export async function obterProjetosQueUsuarioEsta(usuario) {
-  const projetos = await projetoModel.obterTodosQueUsuarioEsta(usuario.id);
+export async function obterProjetosQueUsuarioParticipa(usuario) {
+  const projetos = await projetoModel.obterTodosQueUsuarioParticipa(usuario.id);
 
   return projetos;
 }
