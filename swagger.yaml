@@ -158,8 +158,7 @@ components:
           type: array
           items:
             type: string
-          example:
-            ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
+          example: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
 
     ProjetoDetail:
       type: object
@@ -187,6 +186,12 @@ components:
         nome_responsavel:
           type: string
           example: Nathan
+        criador_id:
+          type: integer
+          example: 1
+        nivel_acesso_id:
+          type: integer
+          example: 2
 
     Registro:
       type: object
@@ -254,8 +259,7 @@ components:
           type: array
           items:
             type: string
-          example:
-            ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
+          example: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
 
     ReuniaoResponse:
       type: object
@@ -682,13 +686,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '404':
-          description: Integrante ou nível de acesso inexistente
+          description: Requisição mal formulada, ou ID de integrante inválido, ou ID de nível de acesso inválido
           content:
             application/json:
               schema:
@@ -756,20 +754,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjetoDetail'
-        '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '401':
           description: Não autenticado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -806,8 +792,22 @@ paths:
             schema:
               $ref: '#/components/schemas/ProjetoRequest'
       responses:
-        '204':
+        '200':
           description: Projeto atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  titulo:
+                    type: string
+                    example: Meu Projeto
+                  descricao:
+                    type: string
+                    example: Descrição do projeto
         '400':
           description: Requisição mal formulada
           content:
@@ -827,7 +827,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto não encontrado
+          description: Um ou mais dos campos inseridos para o integrante não foram encontrados
           content:
             application/json:
               schema:

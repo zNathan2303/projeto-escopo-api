@@ -8,9 +8,7 @@ export async function cadastrar(email, nome, senha) {
     return id;
   } catch (error) {
     if (error.code === 'ER_DUP_ENTRY') {
-      throw new ConflictError(
-        'Não é possível utilizar o e-mail informado para cadastro',
-      );
+      throw new ConflictError('Não é possível utilizar o e-mail informado para cadastro');
     }
 
     throw error;
