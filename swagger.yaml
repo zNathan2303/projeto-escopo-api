@@ -187,6 +187,12 @@ components:
         nome_responsavel:
           type: string
           example: Nathan
+        criador_id:
+          type: integer
+          example: 1
+        nivel_acesso_id:
+          type: integer
+          example: 2
 
     Registro:
       type: object

@@ -19,27 +19,23 @@ export async function obterTodosQueUsuarioParticipa(usuarioId) {
 }
 
 export async function obterDetalhes(projetoId, usuarioId) {
-  const [projeto] = await knex('projeto as p')
-    .where('p.id', projetoId)
-    .andWhere('p.criador_id', usuarioId)
-    .join('usuario as u', 'u.id', 'p.criador_id')
+  const resultado = await knex('vw_projetos_detalhes as vw')
     .select(
-      'p.id',
-      'p.titulo',
-      'p.descricao',
-      'p.status',
-      'p.data_criacao',
-      'u.nome as nome_responsavel',
-      knex.raw(`
-        (
-          SELECT MAX(dv.criado_em)
-          FROM categoria c
-          JOIN documento d ON d.categoria_id = c.id
-          JOIN documento_versao dv ON dv.documento_id = d.id
-          WHERE c.projeto_id = p.id
-        ) as ultima_atualizacao
-      `),
-    );
+      'vw.id',
+      'vw.titulo',
+      'descricao',
+      'vw.status',
+      'vw.data_criacao',
+      'vw.criador_id',
+      'vw.nome_responsavel',
+      'vw.ultima_atualizacao',
+      'usuario_projeto.nivel_acesso_id',
+    )
+    .join('usuario_projeto', 'vw.id', 'usuario_projeto.projeto_id')
+    .where('projeto_id', projetoId)
+    .andWhere('usuario_id', usuarioId);
+
+  const [projeto] = resultado;
 
   return projeto;
 }
