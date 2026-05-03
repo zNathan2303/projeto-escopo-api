@@ -1,18 +1,11 @@
 import knex from '../config/database.js';
-import ConflictError from '../errors/ConflictError.js';
 
-export async function cadastrar(email, nome, senha) {
-  try {
-    const [id] = await knex('usuario').insert({ email, nome, senha });
+export async function cadastrar({ email, nome, senha }) {
+  const resultado = await knex.raw('CALL criar_usuario(?, ?, ?)', [nome, email, senha]);
 
-    return id;
-  } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      throw new ConflictError('Não é possível utilizar o e-mail informado para cadastro');
-    }
+  const { id } = resultado[0][0][0];
 
-    throw error;
-  }
+  return id;
 }
 
 export async function obterComSenhaPorEmail(email) {

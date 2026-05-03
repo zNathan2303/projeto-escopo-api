@@ -10,32 +10,32 @@ import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 
 const projetoSchema = z.object({
   titulo: z
-    .string('Deve ser uma String')
+    .string({ error: 'Deve ser uma String' })
     .trim()
-    .min(1, 'Mínimo 1 caractere')
-    .max(100, 'Máximo 100 caracteres'),
+    .min(1, { error: 'Mínimo 1 caractere' })
+    .max(100, { error: 'Máximo 100 caracteres' }),
   descricao: z.preprocess(
     transformarUndefinedOuStringVaziaEmNull,
-    z.string('Deve ser uma String').nullable(),
+    z.string({ error: 'Deve ser uma String' }).nullable(),
   ),
   integrantes: z
     .array(
       z.object({
         id: z
-          .number('O ID de um integrante deve ser um número')
-          .positive('O ID de um integrante deve ser positivo'),
+          .number({ error: 'O ID de um integrante deve ser um número' })
+          .positive({ error: 'O ID de um integrante deve ser positivo' }),
         nivel_acesso_id: z
-          .number('O ID de nível de acesso de um integrante deve ser um número')
-          .positive('O ID nível de acesso de um integrante deve ser positivo'),
+          .number({ error: 'O ID de nível de acesso de um integrante deve ser um número' })
+          .positive({ error: 'O ID nível de acesso de um integrante deve ser positivo' }),
       }),
-      'Integrantes deve ser um array',
+      { error: 'Integrantes deve ser um array' },
     )
     .optional(),
 });
 
 const idParam = z.coerce
-  .number('O ID de projeto deve ser um número')
-  .positive('O ID de projeto deve ser positivo');
+  .number({ error: 'O ID de projeto deve ser um número' })
+  .positive({ error: 'O ID de projeto deve ser positivo' });
 
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
