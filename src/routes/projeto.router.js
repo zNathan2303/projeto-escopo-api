@@ -25,4 +25,12 @@ router.get('/projeto/:id', validarToken, async (req, res) => {
   res.status(200).json(projeto);
 });
 
+router.put('/projeto/:id', validarToken, verificarSeRequestTemBody, async (req, res) => {
+  const { id } = req.params;
+
+  const projeto = await projetoController.atualizarProjeto(req.body, id, req.usuario);
+
+  res.status(200).json(projeto);
+});
+
 export default router;

@@ -5,6 +5,7 @@ import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
 import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 
 const projetoSchema = z.object({
@@ -23,12 +24,18 @@ const projetoSchema = z.object({
         id: z
           .number('O ID de um integrante deve ser um número')
           .positive('O ID de um integrante deve ser positivo'),
-        nivel_acesso_id: z.number('O ID de nível de acesso de um integrante deve ser um número'),
+        nivel_acesso_id: z
+          .number('O ID de nível de acesso de um integrante deve ser um número')
+          .positive('O ID nível de acesso de um integrante deve ser positivo'),
       }),
       'Integrantes deve ser um array',
     )
     .optional(),
 });
+
+const idParam = z.coerce
+  .number('O ID de projeto deve ser um número')
+  .positive('O ID de projeto deve ser positivo');
 
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
@@ -90,7 +97,9 @@ export async function obterProjetosQueUsuarioParticipa(usuario) {
   return projetos;
 }
 
-export async function obterDetalhesDeUmProjeto(id, usuario) {
+export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
+  const id = idParam.parse(projetoId);
+
   const projeto = await projetoModel.obterDetalhes(id, usuario.id);
 
   if (!projeto) {
@@ -98,4 +107,51 @@ export async function obterDetalhesDeUmProjeto(id, usuario) {
   }
 
   return projeto;
+}
+
+export async function atualizarProjeto(requestBody, projetoId, usuario) {
+  const id = idParam.parse(projetoId);
+  const projeto = projetoSchema.parse(requestBody);
+
+  const { descricao, titulo, integrantes } = projeto;
+
+  return await knex.transaction(async (trx) => {
+    const resultado = await projetoModel.atualizar({ descricao, titulo, id }, usuario.id, trx);
+
+    // Usuário não modificou nada, então ou não possui acesso, ou não acessou o projeto correto
+    if (resultado === 0) {
+      throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    }
+
+    const convitesAEnviar = [];
+
+    for (const integrante of integrantes) {
+      const convite = {
+        destinatarioID: integrante.id,
+        nivelAcessoID: integrante.nivel_acesso_id,
+        projetoID: id,
+        remetenteID: usuario.id,
+      };
+
+      convitesAEnviar.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));
+    }
+
+    try {
+      await Promise.all(convitesAEnviar);
+    } catch (error) {
+      if (error.code === 45000) {
+        throw new NotFoundError(
+          'Um ou mais dos campos inseridos para o integrante não foram encontrados',
+        );
+      }
+
+      if (error.code === 45001) {
+        throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+      }
+
+      throw error;
+    }
+
+    return { id, descricao, titulo };
+  });
 }

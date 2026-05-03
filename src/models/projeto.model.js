@@ -1,11 +1,13 @@
 import knex from '../config/database.js';
 
 export async function criar({ titulo, descricao, criador_id }, db = knex) {
-  const [id] = await db('projeto').insert({
+  const resultado = await db('projeto').insert({
     titulo,
     descricao,
     criador_id,
   });
+
+  const [id] = resultado;
 
   return id;
 }
@@ -38,4 +40,20 @@ export async function obterDetalhes(projetoId, usuarioId) {
   const [projeto] = resultado;
 
   return projeto;
+}
+
+export async function atualizar({ titulo, descricao, id }, usuarioId, db = knex) {
+  const linhasAfetadas = await db('projeto')
+    .update({ titulo, descricao })
+    .where('id', id)
+    .whereExists((subQuery) => {
+      subQuery
+        .select('*')
+        .from('usuario_projeto')
+        .whereRaw('projeto.id = usuario_projeto.projeto_id')
+        .andWhere('usuario_id', usuarioId)
+        .andWhere('nivel_acesso_id', 1);
+    });
+
+  return linhasAfetadas; // Pode ser 1 ou 0, que significa que o usuário conseguiu ou não
 }
