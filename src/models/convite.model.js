@@ -17,3 +17,9 @@ export async function enviarDinamicamentePorProcedure(
     remetenteID,
   ]);
 }
+
+export async function obterAtivosDeUsuario(usuarioId) {
+  const convites = await knex('vw_convites_ativos').where('destinatario_id', usuarioId);
+
+  return convites;
+}
