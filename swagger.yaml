@@ -868,30 +868,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Registro'
-        '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '401':
           description: Não autenticado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
+        '422':
+          description: Projeto com o ID informado inválido
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Erro'
-        '404':
-          description: Projeto com o ID informado não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
+                $ref: '#/components/schemas/ErroCampos'
         '500':
           description: Erro interno do servidor
           content:
@@ -1507,7 +1495,6 @@ paths:
               type: object
               required:
                 - titulo
-                - conteudo
               properties:
                 titulo:
                   type: string
@@ -1517,7 +1504,6 @@ paths:
                 conteudo:
                   type: string
                   example: Conteúdo do registro
-                  minLength: 1
       responses:
         '201':
           description: Registro criado
@@ -1540,7 +1526,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto não encontrado
+          description: Projeto com o ID informado inválido
           content:
             application/json:
               schema:

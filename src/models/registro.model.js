@@ -9,3 +9,16 @@ export async function obterTodosDeUmProjeto(projetoId, usuarioId) {
 
   return registros;
 }
+
+export async function criar({ titulo, conteudo, projetoId, usuarioId }) {
+  const resultado = await knex('registro as r').insert({
+    titulo,
+    conteudo,
+    criador_id: usuarioId,
+    projeto_id: projetoId,
+  });
+
+  const [id] = resultado;
+
+  return id;
+}
