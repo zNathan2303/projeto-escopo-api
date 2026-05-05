@@ -1,7 +1,6 @@
 import z from 'zod';
 import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
-import ForbiddenError from '../errors/ForbiddenError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 const tituloField = z
@@ -58,12 +57,12 @@ export async function criarRegistro(requestBody, projetoId, usuario) {
   });
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    throw new NotFoundError('Projeto não encontrado');
   }
 
   const registroId = resultadoBanco.insertId;
 
-  return registroId;
+  return { id: registroId };
 }
 
 export async function atualizarTituloDeRegistro(requestBody, projetoId, registroId, usuario) {
@@ -80,7 +79,7 @@ export async function atualizarTituloDeRegistro(requestBody, projetoId, registro
   });
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    throw new NotFoundError('Projeto ou registro não encontrado');
   }
 
   return resultadoBanco;
@@ -100,7 +99,7 @@ export async function atualizarConteudoDeRegistro(requestBody, projetoId, regist
   });
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    throw new NotFoundError('Projeto ou registro não encontrado');
   }
 
   return resultadoBanco;
@@ -130,6 +129,6 @@ export async function excluirRegistro(projetoId, registroId, usuario) {
   const resultadoBanco = await registroModel.excluir(registro_id, projeto_id, usuario_id);
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    throw new NotFoundError('Projeto ou registro não encontrado');
   }
 }
