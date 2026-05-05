@@ -3,20 +3,32 @@ import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 
+const tituloField = z
+  .string({ error: 'Deve ser uma String' })
+  .trim()
+  .min(1, { error: 'Mínimo 1 caractere' })
+  .max(150, { error: 'Máximo 150 caracteres' });
+
+const conteudoField = z.preprocess(
+  transformarUndefinedOuStringVaziaEmNull,
+  z.string({ error: 'Deve ser uma String' }).nullable(),
+);
+
 const projetoIdParam = z.coerce
   .number({ error: 'O ID de projeto deve ser um número' })
   .positive({ error: 'O ID de projeto deve ser positivo' });
 
+const registroIdParam = z.coerce
+  .number({ error: 'O ID de registro deve ser um número' })
+  .positive({ error: 'O ID de registro deve ser positivo' });
+
 const registroSchema = z.object({
-  titulo: z
-    .string({ error: 'Deve ser uma String' })
-    .trim()
-    .min(1, { error: 'Mínimo 1 caractere' })
-    .max(150, { error: 'Máximo 150 caracteres' }),
-  conteudo: z.preprocess(
-    transformarUndefinedOuStringVaziaEmNull,
-    z.string({ error: 'Deve ser uma String' }).nullable(),
-  ),
+  titulo: tituloField,
+  conteudo: conteudoField,
+});
+
+const atualizarTituloSchema = z.object({
+  titulo: tituloField,
 });
 
 export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
@@ -47,4 +59,24 @@ export async function criarRegistro(requestBody, projetoId, usuario) {
   const registroId = resultadoBanco.insertId;
 
   return registroId;
+}
+
+export async function atualizarTituloDeRegistro(requestBody, projetoId, registroId, usuario) {
+  const { titulo } = atualizarTituloSchema.parse(requestBody);
+  const projeto_id = projetoIdParam.parse(projetoId);
+  const registro_id = projetoIdParam.parse(registroId);
+  const usuario_id = usuario.id;
+
+  const resultadoBanco = await registroModel.atualizarTitulo({
+    projeto_id,
+    registro_id,
+    titulo,
+    usuario_id,
+  });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+  }
+
+  return resultadoBanco;
 }

@@ -28,3 +28,23 @@ export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
 
   return resultado; // Contém affectedRows e insertId
 }
+
+export async function atualizarTitulo({ titulo, registro_id, projeto_id, usuario_id }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE registro SET titulo = ?
+    WHERE id = ?
+    AND EXISTS (
+      SELECT 1
+      FROM usuario_projeto
+      WHERE projeto_id = ?
+        AND usuario_id = ?
+        AND nivel_acesso_id IN (?, ?)
+    )`,
+    [titulo, registro_id, projeto_id, usuario_id, 1, 2],
+  );
+
+  console.log(resultado);
+
+  return resultado; // Contém affectedRows
+}

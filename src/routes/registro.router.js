@@ -26,4 +26,22 @@ router.post(
   },
 );
 
+router.patch(
+  '/projeto/:projetoId/registro/:registroId/titulo',
+  validarToken,
+  verificarSeRequestTemBody,
+  async (req, res) => {
+    const { projetoId, registroId } = req.params;
+
+    await registroController.atualizarTituloDeRegistro(
+      req.body,
+      projetoId,
+      registroId,
+      req.usuario,
+    );
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;
