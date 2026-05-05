@@ -121,3 +121,15 @@ export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) 
 
   return registro;
 }
+
+export async function excluirRegistro(projetoId, registroId, usuario) {
+  const projeto_id = projetoIdParam.parse(projetoId);
+  const registro_id = registroIdParam.parse(registroId);
+  const usuario_id = usuario.id;
+
+  const resultadoBanco = await registroModel.excluir(registro_id, projeto_id, usuario_id);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+  }
+}

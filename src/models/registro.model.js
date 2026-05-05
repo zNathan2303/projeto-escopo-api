@@ -20,10 +20,10 @@ export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
       FROM usuario_projeto
       WHERE projeto_id = ?
         AND usuario_id = ?
-        AND nivel_acesso_id IN (?, ?)
+        AND nivel_acesso_id IN (1, 2)
     )
     `,
-    [titulo, conteudo, criador_id, projeto_id, projeto_id, criador_id, 1, 2],
+    [titulo, conteudo, criador_id, projeto_id, projeto_id, criador_id],
   );
 
   return resultado; // Contém affectedRows e insertId
@@ -39,9 +39,9 @@ export async function atualizarTitulo({ titulo, registro_id, projeto_id, usuario
       FROM usuario_projeto
       WHERE projeto_id = ?
         AND usuario_id = ?
-        AND nivel_acesso_id IN (?, ?)
+        AND nivel_acesso_id IN (1, 2)
     )`,
-    [titulo, registro_id, projeto_id, usuario_id, 1, 2],
+    [titulo, registro_id, projeto_id, usuario_id],
   );
 
   return resultado; // Contém affectedRows
@@ -57,9 +57,9 @@ export async function atualizarConteudo({ conteudo, registro_id, projeto_id, usu
       FROM usuario_projeto
       WHERE projeto_id = ?
         AND usuario_id = ?
-        AND nivel_acesso_id IN (?, ?)
+        AND nivel_acesso_id IN (1, 2)
     )`,
-    [conteudo, registro_id, projeto_id, usuario_id, 1, 2],
+    [conteudo, registro_id, projeto_id, usuario_id],
   );
 
   return resultado; // Contém affectedRows
@@ -75,10 +75,28 @@ export async function obterDetalhesDeUm(registro_id, projeto_id, usuario_id) {
       FROM usuario_projeto
       WHERE projeto_id = ?
         AND usuario_id = ?
-        AND nivel_acesso_id IN (?, ?)
+        AND nivel_acesso_id IN (1, 2)
     )`,
-    [registro_id, projeto_id, usuario_id, 1, 2],
+    [registro_id, projeto_id, usuario_id],
   );
 
   return resultado;
+}
+
+export async function excluir(registro_id, projeto_id, usuario_id) {
+  const [resultado] = await knex.raw(
+    `
+    DELETE FROM registro
+    WHERE id = ?
+    AND EXISTS (
+      SELECT 1
+      FROM usuario_projeto
+      WHERE projeto_id = ?
+        AND usuario_id = ?
+        AND nivel_acesso_id IN (1, 2)
+    )`,
+    [registro_id, projeto_id, usuario_id],
+  );
+
+  return resultado; // Contém affectedRows
 }

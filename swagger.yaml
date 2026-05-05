@@ -1749,12 +1749,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '404':
-          description: Projeto ou registro não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '500':
           description: Erro interno do servidor
           content:

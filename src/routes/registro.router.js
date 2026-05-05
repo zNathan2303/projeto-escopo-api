@@ -74,4 +74,12 @@ router.get('/projeto/:projetoId/registro/:registroId', validarToken, async (req,
   res.status(200).json(registro);
 });
 
+router.delete('/projeto/:projetoId/registro/:registroId', validarToken, async (req, res) => {
+  const { projetoId, registroId } = req.params;
+
+  await registroController.excluirRegistro(projetoId, registroId, req.usuario);
+
+  res.sendStatus(204);
+});
+
 export default router;
