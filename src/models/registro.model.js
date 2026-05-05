@@ -1,11 +1,23 @@
 import knex from '../config/database.js';
 
 export async function obterTodosDeUmProjeto(projetoId, usuarioId) {
-  const registros = await knex('registro as r')
-    .select('r.id', 'r.titulo', 'r.conteudo', 'r.atualizado_em', 'r.criado_em')
-    .where('r.projeto_id', projetoId)
-    .join('usuario_projeto as up', 'up.projeto_id', 'r.projeto_id')
-    .where('up.usuario_id', usuarioId);
+  const [registros] = await knex.raw(
+    `
+    SELECT
+      r.id, r.titulo, r.conteudo, r.atualizado_em, r.criado_em
+    FROM registro AS r
+    JOIN usuario_projeto AS up
+      ON up.projeto_id = r.projeto_id
+    WHERE r.projeto_id = ?
+      AND up.usuario_id = ?
+      AND EXISTS (
+        SELECT 1
+        FROM usuario_projeto
+        WHERE projeto_id = ?
+          AND usuario_id = ?
+      )`,
+    [projetoId, usuarioId, projetoId, usuarioId],
+  );
 
   return registros;
 }
@@ -21,8 +33,7 @@ export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
       WHERE projeto_id = ?
         AND usuario_id = ?
         AND nivel_acesso_id IN (1, 2)
-    )
-    `,
+    )`,
     [titulo, conteudo, criador_id, projeto_id, projeto_id, criador_id],
   );
 
@@ -75,7 +86,6 @@ export async function obterDetalhesDeUm(registro_id, projeto_id, usuario_id) {
       FROM usuario_projeto
       WHERE projeto_id = ?
         AND usuario_id = ?
-        AND nivel_acesso_id IN (1, 2)
     )`,
     [registro_id, projeto_id, usuario_id],
   );
