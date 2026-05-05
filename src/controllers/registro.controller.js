@@ -31,6 +31,10 @@ const atualizarTituloSchema = z.object({
   titulo: tituloField,
 });
 
+const atualizarConteudoSchema = z.object({
+  conteudo: conteudoField,
+});
+
 export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
   const id = projetoIdParam.parse(projetoId);
   const usuarioId = usuario.id;
@@ -64,13 +68,33 @@ export async function criarRegistro(requestBody, projetoId, usuario) {
 export async function atualizarTituloDeRegistro(requestBody, projetoId, registroId, usuario) {
   const { titulo } = atualizarTituloSchema.parse(requestBody);
   const projeto_id = projetoIdParam.parse(projetoId);
-  const registro_id = projetoIdParam.parse(registroId);
+  const registro_id = registroIdParam.parse(registroId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await registroModel.atualizarTitulo({
     projeto_id,
     registro_id,
     titulo,
+    usuario_id,
+  });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+  }
+
+  return resultadoBanco;
+}
+
+export async function atualizarConteudoDeRegistro(requestBody, projetoId, registroId, usuario) {
+  const { conteudo } = atualizarConteudoSchema.parse(requestBody);
+  const projeto_id = projetoIdParam.parse(projetoId);
+  const registro_id = registroIdParam.parse(registroId);
+  const usuario_id = usuario.id;
+
+  const resultadoBanco = await registroModel.atualizarTitulo({
+    projeto_id,
+    registro_id,
+    conteudo,
     usuario_id,
   });
 
