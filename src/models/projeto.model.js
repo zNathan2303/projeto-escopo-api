@@ -57,3 +57,27 @@ export async function atualizar({ titulo, descricao, id }, usuarioId, db = knex)
 
   return linhasAfetadas; // Pode ser 1 ou 0, que significa que o usuário conseguiu ou não
 }
+
+export async function excluir(projetoId, usuarioId, db = knex) {
+  const horarioAtual = new Date();
+
+  const [resultado] = await db.raw(
+    `
+    UPDATE projeto SET deletado_em = ?
+    WHERE id = ?
+      AND deletado_em IS NULL
+    AND EXISTS (
+      SELECT 1
+      FROM usuario_projeto AS up
+      JOIN usuario AS u
+        ON u.id = ?
+      WHERE up.projeto_id = ?
+        AND up.usuario_id = ?
+        AND up.nivel_acesso_id IN (1)
+        AND u.status = true
+    )`,
+    [horarioAtual, projetoId, usuarioId, projetoId, usuarioId],
+  );
+
+  return resultado; // Contém affectedRows
+}

@@ -155,3 +155,13 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
     return { id, descricao, titulo };
   });
 }
+
+export async function excluirProjeto(projetoId, usuario) {
+  const id = idParam.parse(projetoId);
+
+  const resultadoBanco = await projetoModel.excluir(id, usuario.id);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Projeto não encontrado');
+  }
+}

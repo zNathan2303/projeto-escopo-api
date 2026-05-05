@@ -844,6 +844,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Projeto
+      summary: Exclui um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '204':
+          description: Projeto excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
 
   /api/v1/projeto/{id}/registros:
     get:

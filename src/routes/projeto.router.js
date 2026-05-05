@@ -33,4 +33,12 @@ router.put('/projeto/:id', validarToken, verificarSeRequestTemBody, async (req, 
   res.status(200).json(projeto);
 });
 
+router.delete('/projeto/:id', validarToken, async (req, res) => {
+  const { id } = req.params;
+
+  await projetoController.excluirProjeto(id, req.usuario);
+
+  res.sendStatus(204);
+});
+
 export default router;
