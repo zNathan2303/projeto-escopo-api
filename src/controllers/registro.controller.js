@@ -2,6 +2,7 @@ import z from 'zod';
 import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
+import NotFoundError from '../errors/NotFoundError.js';
 
 const tituloField = z
   .string({ error: 'Deve ser uma String' })
@@ -103,4 +104,20 @@ export async function atualizarConteudoDeRegistro(requestBody, projetoId, regist
   }
 
   return resultadoBanco;
+}
+
+export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) {
+  const projeto_id = projetoIdParam.parse(projetoId);
+  const registro_id = registroIdParam.parse(registroId);
+  const usuario_id = usuario.id;
+
+  const resultadoBanco = await registroModel.obterDetalhesDeUm(registro_id, projeto_id, usuario_id);
+
+  if (resultadoBanco.length === 0) {
+    throw new NotFoundError('Projeto ou registro não encontrado');
+  }
+
+  const [registro] = resultadoBanco;
+
+  return registro;
 }

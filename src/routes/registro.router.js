@@ -62,4 +62,16 @@ router.patch(
   },
 );
 
+router.get('/projeto/:projetoId/registro/:registroId', validarToken, async (req, res) => {
+  const { projetoId, registroId } = req.params;
+
+  const registro = await registroController.obterDetalhesDeUmRegistro(
+    projetoId,
+    registroId,
+    req.usuario,
+  );
+
+  res.status(200).json(registro);
+});
+
 export default router;

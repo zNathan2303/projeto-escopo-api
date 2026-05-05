@@ -1703,12 +1703,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '404':
           description: Projeto ou registro não encontrado
           content:

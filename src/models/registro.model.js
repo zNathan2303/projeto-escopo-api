@@ -64,3 +64,21 @@ export async function atualizarConteudo({ conteudo, registro_id, projeto_id, usu
 
   return resultado; // Contém affectedRows
 }
+
+export async function obterDetalhesDeUm(registro_id, projeto_id, usuario_id) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT id, titulo, conteudo, atualizado_em, criado_em FROM registro
+    WHERE id = ?
+    AND EXISTS (
+      SELECT 1
+      FROM usuario_projeto
+      WHERE projeto_id = ?
+        AND usuario_id = ?
+        AND nivel_acesso_id IN (?, ?)
+    )`,
+    [registro_id, projeto_id, usuario_id, 1, 2],
+  );
+
+  return resultado;
+}
