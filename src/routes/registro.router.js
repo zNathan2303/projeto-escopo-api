@@ -20,9 +20,9 @@ router.post(
   async (req, res) => {
     const { projetoId } = req.params;
 
-    const registroId = await registroController.criarRegistro(req.body, projetoId, req.usuario);
+    await registroController.criarRegistro(req.body, projetoId, req.usuario);
 
-    res.status(200).json({ id: registroId });
+    res.sendStatus(201);
   },
 );
 

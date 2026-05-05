@@ -1,6 +1,7 @@
 import z from 'zod';
 import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
 
 const projetoIdParam = z.coerce
   .number({ error: 'O ID de projeto deve ser um número' })
@@ -27,17 +28,23 @@ export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
   return registros;
 }
 
-export async function criarRegistro(requestBody, projeto_id, usuario) {
-  const registro = registroSchema.parse(requestBody);
-  const projetoId = projetoIdParam.parse(projeto_id);
-  const usuarioId = usuario.id;
+export async function criarRegistro(requestBody, projetoId, usuario) {
+  const { conteudo, titulo } = registroSchema.parse(requestBody);
+  const projeto_id = projetoIdParam.parse(projetoId);
+  const criador_id = usuario.id;
 
-  const registroId = await registroModel.criar({
-    conteudo: registro.conteudo,
-    projetoId,
-    usuarioId,
-    titulo: registro.titulo,
+  const resultadoBanco = await registroModel.criar({
+    titulo,
+    conteudo,
+    projeto_id,
+    criador_id,
   });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+  }
+
+  const registroId = resultadoBanco.insertId;
 
   return registroId;
 }

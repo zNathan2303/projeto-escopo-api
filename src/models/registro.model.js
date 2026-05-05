@@ -10,15 +10,21 @@ export async function obterTodosDeUmProjeto(projetoId, usuarioId) {
   return registros;
 }
 
-export async function criar({ titulo, conteudo, projetoId, usuarioId }) {
-  const resultado = await knex('registro as r').insert({
-    titulo,
-    conteudo,
-    criador_id: usuarioId,
-    projeto_id: projetoId,
-  });
+export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
+  const [resultado] = await knex.raw(
+    `
+    INSERT INTO registro (titulo, conteudo, criador_id, projeto_id)
+    SELECT ?, ?, ?, ?
+    WHERE EXISTS (
+      SELECT 1
+      FROM usuario_projeto
+      WHERE projeto_id = ?
+        AND usuario_id = ?
+        AND nivel_acesso_id IN (?, ?)
+    )
+    `,
+    [titulo, conteudo, criador_id, projeto_id, projeto_id, criador_id, 1, 2],
+  );
 
-  const [id] = resultado;
-
-  return id;
+  return resultado; // Contém affectedRows e insertId
 }

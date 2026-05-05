@@ -1525,12 +1525,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '404':
-          description: Projeto com o ID informado inválido
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '422':
           description: Campos inválidos
           content:
