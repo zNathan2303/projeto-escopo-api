@@ -6,6 +6,10 @@ const projetoIDParam = z.coerce
   .number({ error: 'O ID de projeto deve ser um número' })
   .positive({ error: 'O ID de projeto deve ser positivo' });
 
+const categoriaIDParam = z.coerce
+  .number({ error: 'O ID de categoria deve ser um número' })
+  .positive({ error: 'O ID de categoria deve ser positivo' });
+
 const categoriaSchema = z.object({
   titulo: z
     .string({ error: 'Deve ser uma String' })
@@ -27,4 +31,16 @@ export async function criarCategoria(requestBody, projetoId, usuario) {
   const categoriaId = resultadoBanco.insertId;
 
   return categoriaId;
+}
+
+export async function excluirCategoria(categoriaId, projetoId, usuario) {
+  const categoria_id = categoriaIDParam.parse(categoriaId);
+  const projeto_id = projetoIDParam.parse(projetoId);
+  const usuario_id = usuario.id;
+
+  const resultadoBanco = await categoriaModel.excluir(categoria_id, projeto_id, usuario_id);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Projeto ou categoria não encontrada');
+  }
 }

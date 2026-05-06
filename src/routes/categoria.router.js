@@ -18,4 +18,12 @@ router.post(
   },
 );
 
+router.delete('/projeto/:projetoId/categoria/:categoriaId', validarToken, async (req, res) => {
+  const { projetoId, categoriaId } = req.params;
+
+  await categoriaController.excluirCategoria(categoriaId, projetoId, req.usuario);
+
+  res.sendStatus(204);
+});
+
 export default router;
