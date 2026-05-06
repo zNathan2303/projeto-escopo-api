@@ -245,6 +245,44 @@ components:
           items:
             $ref: '#/components/schemas/Documento'
 
+    ProjetoDocumentacaoResponse:
+      type: object
+      properties:
+        projeto:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            categorias:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  nome:
+                    type: string
+                    example: Plataforma Web
+                  documentos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        titulo:
+                          type: string
+                          example: Documento de Requisitos
+                        ultima_alteracao:
+                          type: string
+                          example: '2025-02-12 23:00:00.000000'
+                        quantidade_versoes:
+                          type: integer
+                          example: 5
+
     Reuniao:
       type: object
       properties:
@@ -965,7 +1003,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/documentacao:
+  /api/v1/projeto/{id}/categorias/documentos:
     get:
       tags:
         - Documento
@@ -985,23 +1023,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CategoriaDocumentacao'
-        '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
+                $ref: '#/components/schemas/ProjetoDocumentacaoResponse'
         '401':
           description: Não autenticado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
