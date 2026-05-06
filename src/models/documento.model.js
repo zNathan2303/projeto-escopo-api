@@ -1,12 +1,21 @@
 import knex from '../config/database.js';
 
 export async function obterModificadosRecentemente(usuarioId) {
-  const documentos = await knex('vw_documentos_recentes')
-    .select('id', 'projeto', 'categoria', 'documento')
-    .max('ultima_edicao as ultima_edicao')
-    .where('criador_id', usuarioId)
-    .groupBy('id')
-    .limit(5);
+  const [documentos] = await knex.raw(
+    `
+    SELECT
+      id,
+      projeto,
+      categoria,
+      documento,
+      MAX(ultima_edicao) AS ultima_edicao
+    FROM vw_documentos_recentes
+    WHERE criador_id = ?
+    GROUP BY id
+    LIMIT 5
+    `,
+    [usuarioId],
+  );
 
   return documentos;
 }
