@@ -1987,16 +1987,12 @@ paths:
               type: object
               required:
                 - titulo
-                - conteudo
               properties:
                 titulo:
                   type: string
                   example: Documento de Requisitos
                   minLength: 1
                   maxLength: 150
-                conteudo:
-                  type: string
-                  example: Conteúdo do documento
       responses:
         '201':
           description: Documento criado

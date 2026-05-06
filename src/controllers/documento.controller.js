@@ -22,3 +22,5 @@ export async function obterDocumentosDeCadaCategoria(projetoId, usuario) {
 
   return projetoComCategoriasEDocumentos;
 }
+
+export async function criarDocumento(requestBody, projetoID, categoriaID, usuario) {}
