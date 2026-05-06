@@ -599,6 +599,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
+  /api/v1/usuario/foto-perfil:
+    patch:
+      tags:
+        - Usuário
+      summary: Atualiza a foto de perfil do usuário autenticado
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - foto_perfil
+              properties:
+                foto_perfil:
+                  type: string
+                  format: uri
+                  minLength: 1
+                  maxLength: 512
+                  example: https://example.com/image.jpg
+      responses:
+        '204':
+          description: Foto de perfil alterada
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Foto de perfil inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
   /api/v1/usuario:
     delete:
       tags:

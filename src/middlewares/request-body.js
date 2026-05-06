@@ -1,11 +1,7 @@
 import BadRequestError from '../errors/BadRequestError.js';
 
 export function tratarRequestBodyInvalido(err, req, res, next) {
-  if (
-    err instanceof SyntaxError &&
-    err.status === 400 &&
-    err.type === 'entity.parse.failed'
-  ) {
+  if (err instanceof SyntaxError && err.status === 400 && err.type === 'entity.parse.failed') {
     throw new BadRequestError('Requisição mal formulada');
   }
 

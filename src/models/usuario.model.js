@@ -41,6 +41,18 @@ export async function atualizarNome(id, nome) {
   );
 }
 
+export async function atualizarFotoPerfil(id, fotoPerfil) {
+  await knex.raw(
+    `
+    UPDATE usuario
+      SET foto_perfil = ?
+    WHERE id = ?
+      AND status = true
+    `,
+    [fotoPerfil, id],
+  );
+}
+
 export async function desativar(id) {
   await knex.raw(
     `

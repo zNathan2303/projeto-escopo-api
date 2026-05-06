@@ -5,15 +5,15 @@ import * as usuarioController from '../controllers/usuario.controller.js';
 
 const router = Router();
 
-router.patch(
-  '/usuario/nome',
-  validarToken,
-  verificarSeRequestTemBody,
-  async (req, res) => {
-    await usuarioController.atualizarNomeDoUsuario(req.usuario, req.body);
-    res.sendStatus(204);
-  },
-);
+router.patch('/usuario/nome', validarToken, verificarSeRequestTemBody, async (req, res) => {
+  await usuarioController.atualizarNomeDoUsuario(req.usuario, req.body);
+  res.sendStatus(204);
+});
+
+router.patch('/usuario/foto-perfil', validarToken, verificarSeRequestTemBody, async (req, res) => {
+  await usuarioController.atualizarFotoPerfilDoUsuario(req.usuario, req.body);
+  res.sendStatus(204);
+});
 
 router.delete('/usuario', validarToken, async (req, res) => {
   await usuarioController.desativarUsuario(req.usuario);

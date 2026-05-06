@@ -1,6 +1,7 @@
 import z from 'zod';
 import * as usuarioModel from '../models/usuario.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 
 const nomeSchema = z.object({
   nome: z
@@ -8,6 +9,16 @@ const nomeSchema = z.object({
     .trim()
     .min(1, { error: 'Mínimo 1 caractere' })
     .max(100, { error: 'Máximo 100 caracteres' }),
+});
+
+const fotoPerfilSchema = z.object({
+  foto_perfil: z.preprocess(
+    transformarUndefinedOuStringVaziaEmNull,
+    z
+      .string({ error: 'Deve ser uma String' })
+      .max(512, { error: 'Máximo 512 caracteres' })
+      .nullable(),
+  ),
 });
 
 const emailCampo = z
@@ -22,6 +33,12 @@ export async function atualizarNomeDoUsuario(usuario, requestBody) {
   const { nome } = nomeSchema.parse(requestBody);
 
   await usuarioModel.atualizarNome(usuario.id, nome);
+}
+
+export async function atualizarFotoPerfilDoUsuario(usuario, requestBody) {
+  const { foto_perfil } = fotoPerfilSchema.parse(requestBody);
+
+  await usuarioModel.atualizarFotoPerfil(usuario.id, foto_perfil);
 }
 
 export async function desativarUsuario(usuario) {
