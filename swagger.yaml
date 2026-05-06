@@ -820,14 +820,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '404':
-          description: Um ou mais dos campos inseridos para o integrante não foram encontrados
+          description: Um ou mais dos campos inseridos para o integrante não foram encontrados, ou o projeto com o ID informado não foi encontrado
           content:
             application/json:
               schema:
@@ -838,6 +832,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Projeto
+      summary: Exclui um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '204':
+          description: Projeto excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '500':
           description: Erro interno do servidor
           content:

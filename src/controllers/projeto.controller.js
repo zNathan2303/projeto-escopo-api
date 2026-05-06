@@ -43,7 +43,7 @@ export async function criarProjeto(requestBody, usuario) {
   const niveisAcessoIDs = await obterIDsDeNiveisAcesso(knex);
 
   await knex.transaction(async (trx) => {
-    const projetoId = await projetoModel.criar(
+    const resultadoBanco = await projetoModel.criar(
       {
         titulo: projeto.titulo,
         descricao: projeto.descricao,
@@ -51,6 +51,8 @@ export async function criarProjeto(requestBody, usuario) {
       },
       trx,
     );
+
+    const projetoId = resultadoBanco.insertId;
 
     if (projeto.integrantes === undefined || projeto.integrantes.length === 0) {
       return;
@@ -116,11 +118,11 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
   const { descricao, titulo, integrantes } = projeto;
 
   return await knex.transaction(async (trx) => {
-    const resultado = await projetoModel.atualizar({ descricao, titulo, id }, usuario.id, trx);
+    const resultadoBanco = await projetoModel.atualizar({ descricao, titulo, id }, usuario.id, trx);
 
-    // Usuário não modificou nada, então ou não possui acesso, ou não acessou o projeto correto
-    if (resultado === 0) {
-      throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+    // Usuário não modificou nada, então não foi encontrado um projeto que ele possua acesso para modificar
+    if (resultadoBanco.affectedRows === 0) {
+      throw new NotFoundError('Não possui permissão para acessar esse recurso');
     }
 
     const convitesAEnviar = [];
@@ -154,4 +156,14 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
 
     return { id, descricao, titulo };
   });
+}
+
+export async function excluirProjeto(projetoId, usuario) {
+  const id = idParam.parse(projetoId);
+
+  const resultadoBanco = await projetoModel.excluir(id, usuario.id);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Projeto não encontrado');
+  }
 }
