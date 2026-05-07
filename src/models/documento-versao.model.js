@@ -1,6 +1,6 @@
 import knex from '../config/database.js';
 
-export async function criar({ conteudo, criadorID, documentoID }, projetoID) {
+export async function criar({ conteudo, criadorId, documentoId, projetoId }) {
   const [resultado] = await knex.raw(
     `
     INSERT INTO documento_versao (conteudo, criador_id, documento_id)
@@ -15,7 +15,7 @@ export async function criar({ conteudo, criadorID, documentoID }, projetoID) {
         AND up.nivel_acesso_id IN (1, 2)
         AND u.status = true
     )`,
-    [conteudo, criadorID, documentoID, projetoID, criadorID],
+    [conteudo, criadorId, documentoId, projetoId, criadorId],
   );
 
   return resultado; // Contém affectedRows e insertId

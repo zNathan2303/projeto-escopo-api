@@ -12,7 +12,7 @@ router.post(
   async (req, res) => {
     const { projetoId } = req.params;
 
-    await categoriaController.criarCategoria(req.body, projetoId, req.usuario);
+    await categoriaController.criarCategoria(req.body, projetoId, req.usuario.id);
 
     res.sendStatus(201);
   },
@@ -21,7 +21,7 @@ router.post(
 router.delete('/projeto/:projetoId/categoria/:categoriaId', validarToken, async (req, res) => {
   const { projetoId, categoriaId } = req.params;
 
-  await categoriaController.excluirCategoria(categoriaId, projetoId, req.usuario);
+  await categoriaController.excluirCategoria(categoriaId, projetoId, req.usuario.id);
 
   res.sendStatus(204);
 });

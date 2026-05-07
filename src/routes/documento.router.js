@@ -30,4 +30,21 @@ router.post(
   },
 );
 
+router.get(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId',
+  validarToken,
+  validarAcesso,
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId } = req.params;
+
+    const documento = await documentoController.obterDetalhesDeDocumento(
+      documentoId,
+      categoriaId,
+      projetoId,
+    );
+
+    res.status(200).json(documento);
+  },
+);
+
 export default router;

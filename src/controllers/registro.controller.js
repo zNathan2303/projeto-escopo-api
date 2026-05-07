@@ -37,16 +37,16 @@ export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
   return registros;
 }
 
-export async function criarRegistro(requestBody, projetoId, usuario) {
+export async function criarRegistro(requestBody, projetoIdParam, usuario) {
   const { conteudo, titulo } = registroSchema.parse(requestBody);
-  const projeto_id = zodParam.projetoId.parse(projetoId);
-  const criador_id = usuario.id;
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const criadorId = usuario.id;
 
   const resultadoBanco = await registroModel.criar({
     titulo,
     conteudo,
-    projeto_id,
-    criador_id,
+    projetoId,
+    criadorId,
   });
 
   if (resultadoBanco.affectedRows === 0) {
@@ -58,17 +58,22 @@ export async function criarRegistro(requestBody, projetoId, usuario) {
   return { id: registroId };
 }
 
-export async function atualizarTituloDeRegistro(requestBody, projetoId, registroId, usuario) {
+export async function atualizarTituloDeRegistro(
+  requestBody,
+  projetoIdParam,
+  registroIdParam,
+  usuario,
+) {
   const { titulo } = atualizarTituloSchema.parse(requestBody);
-  const projeto_id = zodParam.projetoId.parse(projetoId);
-  const registro_id = zodParam.registroId.parse(registroId);
-  const usuario_id = usuario.id;
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const registroId = zodParam.registroId.parse(registroIdParam);
+  const usuarioId = usuario.id;
 
   const resultadoBanco = await registroModel.atualizarTitulo({
-    projeto_id,
-    registro_id,
+    projetoId,
+    registroId,
     titulo,
-    usuario_id,
+    usuarioId,
   });
 
   if (resultadoBanco.affectedRows === 0) {
@@ -78,17 +83,22 @@ export async function atualizarTituloDeRegistro(requestBody, projetoId, registro
   return resultadoBanco;
 }
 
-export async function atualizarConteudoDeRegistro(requestBody, projetoId, registroId, usuario) {
+export async function atualizarConteudoDeRegistro(
+  requestBody,
+  projetoIdParam,
+  registroIdParam,
+  usuario,
+) {
   const { conteudo } = atualizarConteudoSchema.parse(requestBody);
-  const projeto_id = zodParam.projetoId.parse(projetoId);
-  const registro_id = zodParam.registroId.parse(registroId);
-  const usuario_id = usuario.id;
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const registroId = zodParam.registroId.parse(registroIdParam);
+  const usuarioId = usuario.id;
 
   const resultadoBanco = await registroModel.atualizarTitulo({
-    projeto_id,
-    registro_id,
+    projetoId,
+    registroId,
     conteudo,
-    usuario_id,
+    usuarioId,
   });
 
   if (resultadoBanco.affectedRows === 0) {
@@ -98,12 +108,16 @@ export async function atualizarConteudoDeRegistro(requestBody, projetoId, regist
   return resultadoBanco;
 }
 
-export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) {
-  const projeto_id = zodParam.projetoId.parse(projetoId);
-  const registro_id = zodParam.registroId.parse(registroId);
-  const usuario_id = usuario.id;
+export async function obterDetalhesDeUmRegistro(projetoIdParam, registroIdParam, usuario) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const registroId = zodParam.registroId.parse(registroIdParam);
+  const usuarioId = usuario.id;
 
-  const resultadoBanco = await registroModel.obterDetalhesDeUm(registro_id, projeto_id, usuario_id);
+  const resultadoBanco = await registroModel.obterDetalhesDeUm({
+    projetoId,
+    registroId,
+    usuarioId,
+  });
 
   if (resultadoBanco.length === 0) {
     throw new NotFoundError('Projeto ou registro não encontrado');
@@ -114,12 +128,12 @@ export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) 
   return registro;
 }
 
-export async function excluirRegistro(projetoId, registroId, usuario) {
-  const projeto_id = zodParam.projetoId.parse(projetoId);
-  const registro_id = zodParam.registroId.parse(registroId);
-  const usuario_id = usuario.id;
+export async function excluirRegistro(projetoIdParam, registroIdParam, usuario) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const registroId = zodParam.registroId.parse(registroIdParam);
+  const usuarioId = usuario.id;
 
-  const resultadoBanco = await registroModel.excluir(registro_id, projeto_id, usuario_id);
+  const resultadoBanco = await registroModel.excluir({ projetoId, registroId, usuarioId });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Projeto ou registro não encontrado');

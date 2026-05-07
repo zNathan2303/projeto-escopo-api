@@ -23,7 +23,7 @@ export async function obterTodosDeUmProjeto(projetoId, usuarioId) {
   return registros;
 }
 
-export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
+export async function criar({ titulo, conteudo, projetoId, criadorId }) {
   const [resultado] = await knex.raw(
     `
     INSERT INTO registro (titulo, conteudo, criador_id, projeto_id)
@@ -41,13 +41,13 @@ export async function criar({ titulo, conteudo, projeto_id, criador_id }) {
         AND u.status = true
         AND p.deletado_em IS NULL
     )`,
-    [titulo, conteudo, criador_id, projeto_id, projeto_id, criador_id],
+    [titulo, conteudo, criadorId, projetoId, projetoId, criadorId],
   );
 
   return resultado; // Contém affectedRows e insertId
 }
 
-export async function atualizarTitulo({ titulo, registro_id, projeto_id, usuario_id }) {
+export async function atualizarTitulo({ titulo, registroId, projetoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     UPDATE registro SET titulo = ?
@@ -66,13 +66,13 @@ export async function atualizarTitulo({ titulo, registro_id, projeto_id, usuario
         AND u.status = true
         AND p.deletado_em IS NULL
     )`,
-    [titulo, registro_id, projeto_id, projeto_id, usuario_id],
+    [titulo, registroId, projetoId, projetoId, usuarioId],
   );
 
   return resultado; // Contém affectedRows
 }
 
-export async function atualizarConteudo({ conteudo, registro_id, projeto_id, usuario_id }) {
+export async function atualizarConteudo({ conteudo, registroId, projetoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     UPDATE registro SET conteudo = ?
@@ -91,13 +91,13 @@ export async function atualizarConteudo({ conteudo, registro_id, projeto_id, usu
         AND u.status = true
         AND p.deletado_em IS NULL
     )`,
-    [conteudo, registro_id, projeto_id, projeto_id, usuario_id],
+    [conteudo, registroId, projetoId, projetoId, usuarioId],
   );
 
   return resultado; // Contém affectedRows
 }
 
-export async function obterDetalhesDeUm(registro_id, projeto_id, usuario_id) {
+export async function obterDetalhesDeUm({ registroId, projetoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     SELECT r.id, r.titulo, r.conteudo, r.atualizado_em, r.criado_em
@@ -114,13 +114,13 @@ export async function obterDetalhesDeUm(registro_id, projeto_id, usuario_id) {
       AND u.status = true
       AND p.deletado_em IS NULL
     `,
-    [registro_id, projeto_id, usuario_id],
+    [registroId, projetoId, usuarioId],
   );
 
   return resultado;
 }
 
-export async function excluir(registro_id, projeto_id, usuario_id) {
+export async function excluir({ registroId, projetoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     DELETE FROM registro
@@ -139,7 +139,7 @@ export async function excluir(registro_id, projeto_id, usuario_id) {
         AND u.status = true
         AND p.deletado_em IS NULL
     )`,
-    [registro_id, projeto_id, projeto_id, usuario_id],
+    [registroId, projetoId, projetoId, usuarioId],
   );
 
   return resultado; // Contém affectedRows

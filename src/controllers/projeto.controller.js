@@ -44,7 +44,7 @@ export async function criarProjeto(requestBody, usuario) {
       {
         titulo: projeto.titulo,
         descricao: projeto.descricao,
-        criador_id: usuario.id,
+        criadorId: usuario.id,
       },
       trx,
     );
@@ -126,10 +126,10 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
 
     for (const integrante of integrantes) {
       const convite = {
-        destinatarioID: integrante.id,
-        nivelAcessoID: integrante.nivel_acesso_id,
-        projetoID: id,
-        remetenteID: usuario.id,
+        destinatarioId: integrante.id,
+        nivelAcessoId: integrante.nivel_acesso_id,
+        projetoId: id,
+        remetenteId: usuario.id,
       };
 
       convitesAEnviar.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));

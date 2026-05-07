@@ -40,7 +40,7 @@ export async function criarDocumento(requestBody, projetoIdParam, categoriaIdPar
     throw new ForbiddenError('Não possui permissão para acessar esse recurso');
   }
 
-  const resultadoBanco = await documentoModel.criar({ categoriaId, titulo }, projetoId);
+  const resultadoBanco = await documentoModel.criar({ categoriaId, titulo, projetoId });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Não foi encontrada a categoria pertencente ao projeto');
@@ -49,4 +49,22 @@ export async function criarDocumento(requestBody, projetoIdParam, categoriaIdPar
   const { insertId } = resultadoBanco;
 
   return insertId;
+}
+
+export async function obterDetalhesDeDocumento(documentoIdParam, categoriaIdParam, projetoIdParam) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+
+  const documento = await documentoModel.obterDetalhesPorId({
+    categoriaId,
+    documentoId,
+    projetoId,
+  });
+
+  if (!documento) {
+    throw new NotFoundError('Documento não encontrado');
+  }
+
+  return documento;
 }

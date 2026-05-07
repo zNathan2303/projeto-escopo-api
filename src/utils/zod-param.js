@@ -11,3 +11,7 @@ export const categoriaId = z.coerce
 export const registroId = z.coerce
   .number({ error: 'O ID de registro deve ser um número' })
   .positive({ error: 'O ID de registro deve ser positivo' });
+
+export const documentoId = z.coerce
+  .number({ error: 'O ID de documento deve ser um número' })
+  .positive({ error: 'O ID de documento deve ser positivo' });
