@@ -20,14 +20,17 @@ export async function obterModificadosRecentemente(usuarioId) {
   return documentos;
 }
 
-export async function criar({ titulo, categoriaID }, db = knex) {
+export async function criar({ titulo, categoriaId }, projetoId, db = knex) {
   const [resultado] = await db.raw(
     `
     INSERT INTO documento (titulo, categoria_id)
-    SELECT ?, ?
+    SELECT ?, c.id
+    FROM categoria AS c
+    WHERE c.id = ?
+      AND c.projeto_id = ?
     `,
-    [titulo, categoriaID],
+    [titulo, categoriaId, projetoId],
   );
 
-  return resultado; // Contém affectedRows e insertId
+  return resultado;
 }

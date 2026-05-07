@@ -24,12 +24,12 @@ export function validarToken(req, res, next) {
 }
 
 export async function validarAcesso(req, res, next) {
-  const usuarioID = req.usuario.id;
-  const projetoID = zodParam.projetoID.parse(req.params.projetoID);
+  const usuarioId = req.usuario.id;
+  const projetoId = zodParam.projetoId.parse(req.params.projetoId);
 
   const temPermissao = await usuarioProjetoModel.verificarParticipacaoDoUsuarioNoProjeto({
-    projetoID,
-    usuarioID,
+    projetoId,
+    usuarioId,
   });
 
   if (!temPermissao) {

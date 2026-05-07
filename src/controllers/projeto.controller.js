@@ -97,7 +97,7 @@ export async function obterProjetosQueUsuarioParticipa(usuario) {
 }
 
 export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
-  const id = zodParam.projetoID.parse(projetoId);
+  const id = zodParam.projetoId.parse(projetoId);
 
   const projeto = await projetoModel.obterDetalhes(id, usuario.id);
 
@@ -109,7 +109,7 @@ export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
 }
 
 export async function atualizarProjeto(requestBody, projetoId, usuario) {
-  const id = zodParam.projetoID.parse(projetoId);
+  const id = zodParam.projetoId.parse(projetoId);
   const projeto = projetoSchema.parse(requestBody);
 
   const { descricao, titulo, integrantes } = projeto;
@@ -156,7 +156,7 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
 }
 
 export async function excluirProjeto(projetoId, usuario) {
-  const id = zodParam.projetoIDParam.parse(projetoId);
+  const id = zodParam.projetoId.parse(projetoId);
 
   const resultadoBanco = await projetoModel.excluir(id, usuario.id);
 

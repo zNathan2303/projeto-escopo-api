@@ -6,7 +6,7 @@ import { validarPermissao } from '../utils/validacoes.js';
 import * as zodParam from '../utils/zod-param.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 
-const documentoSchema = z.object({
+const criarDocumentoSchema = z.object({
   titulo: z
     .string({ error: 'Deve ser uma String' })
     .trim()
@@ -14,13 +14,12 @@ const documentoSchema = z.object({
     .max(150, { error: 'Máximo 150 caracteres' }),
 });
 
-export async function obterDocumentosDeCadaCategoria(projetoId, usuario) {
-  const projeto_id = zodParam.projetoID.parse(projetoId);
-  const usuario_id = usuario.id;
+export async function obterDocumentosDeCadaCategoria(projetoIdParam, usuarioId) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
 
   const projetoComCategoriasEDocumentos = await categoriaModel.obterComDocumentos(
-    projeto_id,
-    usuario_id,
+    projetoId,
+    usuarioId,
   );
 
   if (!projetoComCategoriasEDocumentos) {
@@ -30,21 +29,21 @@ export async function obterDocumentosDeCadaCategoria(projetoId, usuario) {
   return projetoComCategoriasEDocumentos;
 }
 
-export async function criarDocumento(requestBody, projetoIDParam, categoriaIDParam, usuarioID) {
-  const { titulo } = documentoSchema.parse(requestBody);
-  const projetoID = zodParam.projetoID.parse(projetoIDParam);
-  const categoriaID = zodParam.categoriaID.parse(categoriaIDParam);
+export async function criarDocumento(requestBody, projetoIdParam, categoriaIdParam, usuarioId) {
+  const { titulo } = criarDocumentoSchema.parse(requestBody);
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
 
-  const temPermissao = await validarPermissao({ projetoID, usuarioID, niveisDeAcessoIDs: [1, 2] });
+  const temPermissao = await validarPermissao({ projetoId, usuarioId, niveisDeAcessoIds: [1, 2] });
 
   if (!temPermissao) {
     throw new ForbiddenError('Não possui permissão para acessar esse recurso');
   }
 
-  const resultadoBanco = await documentoModel.criar({ categoriaID, titulo });
+  const resultadoBanco = await documentoModel.criar({ categoriaId, titulo }, projetoId);
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new NotFoundError('Não foi encontrada a categoria com o ID informado');
+    throw new NotFoundError('Não foi encontrada a categoria pertencente ao projeto');
   }
 
   const { insertId } = resultadoBanco;

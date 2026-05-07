@@ -12,7 +12,7 @@ const categoriaSchema = z.object({
 
 export async function criarCategoria(requestBody, projetoId, usuario) {
   const { titulo } = categoriaSchema.parse(requestBody);
-  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const projeto_id = zodParam.projetoId.parse(projetoId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await categoriaModel.criar({ titulo }, projeto_id, usuario_id);
@@ -27,8 +27,8 @@ export async function criarCategoria(requestBody, projetoId, usuario) {
 }
 
 export async function excluirCategoria(categoriaId, projetoId, usuario) {
-  const categoria_id = zodParam.categoriaID.parse(categoriaId);
-  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const categoria_id = zodParam.categoriaId.parse(categoriaId);
+  const projeto_id = zodParam.projetoId.parse(projetoId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await categoriaModel.excluir(categoria_id, projeto_id, usuario_id);

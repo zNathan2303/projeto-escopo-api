@@ -5,26 +5,26 @@ import { validarToken, validarAcesso } from '../middlewares/auth.js';
 
 const router = Router();
 
-router.get('/projeto/:projetoID/categorias/documentos', validarToken, async (req, res) => {
-  const { projetoID } = req.params;
+router.get('/projeto/:projetoId/categorias/documentos', validarToken, async (req, res) => {
+  const { projetoId } = req.params;
 
   const documentos = await documentoController.obterDocumentosDeCadaCategoria(
-    projetoID,
-    req.usuario,
+    projetoId,
+    req.usuario.id,
   );
 
   res.status(200).json(documentos);
 });
 
 router.post(
-  '/projeto/:projetoID/categoria/:categoriaID/documento',
+  '/projeto/:projetoId/categoria/:categoriaId/documento',
   validarToken,
   verificarSeRequestTemBody,
   validarAcesso,
   async (req, res) => {
-    const { categoriaID, projetoID } = req.params;
+    const { categoriaId, projetoId } = req.params;
 
-    await documentoController.criarDocumento(req.body, projetoID, categoriaID, req.usuario.id);
+    await documentoController.criarDocumento(req.body, projetoId, categoriaId, req.usuario.id);
 
     res.sendStatus(201);
   },
