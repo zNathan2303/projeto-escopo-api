@@ -7,6 +7,7 @@ import BadRequestError from '../errors/BadRequestError.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
+import * as zodParam from '../utils/zod-param.js';
 
 const projetoSchema = z.object({
   titulo: z
@@ -32,10 +33,6 @@ const projetoSchema = z.object({
     )
     .optional(),
 });
-
-const idParam = z.coerce
-  .number({ error: 'O ID de projeto deve ser um número' })
-  .positive({ error: 'O ID de projeto deve ser positivo' });
 
 export async function criarProjeto(requestBody, usuario) {
   const projeto = projetoSchema.parse(requestBody);
@@ -100,7 +97,7 @@ export async function obterProjetosQueUsuarioParticipa(usuario) {
 }
 
 export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
-  const id = idParam.parse(projetoId);
+  const id = zodParam.projetoID.parse(projetoId);
 
   const projeto = await projetoModel.obterDetalhes(id, usuario.id);
 
@@ -112,7 +109,7 @@ export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
 }
 
 export async function atualizarProjeto(requestBody, projetoId, usuario) {
-  const id = idParam.parse(projetoId);
+  const id = zodParam.projetoID.parse(projetoId);
   const projeto = projetoSchema.parse(requestBody);
 
   const { descricao, titulo, integrantes } = projeto;
@@ -159,7 +156,7 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
 }
 
 export async function excluirProjeto(projetoId, usuario) {
-  const id = idParam.parse(projetoId);
+  const id = zodParam.projetoIDParam.parse(projetoId);
 
   const resultadoBanco = await projetoModel.excluir(id, usuario.id);
 

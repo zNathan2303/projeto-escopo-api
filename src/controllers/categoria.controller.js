@@ -1,14 +1,7 @@
 import z from 'zod';
 import * as categoriaModel from '../models/categoria.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
-
-const projetoIDParam = z.coerce
-  .number({ error: 'O ID de projeto deve ser um número' })
-  .positive({ error: 'O ID de projeto deve ser positivo' });
-
-const categoriaIDParam = z.coerce
-  .number({ error: 'O ID de categoria deve ser um número' })
-  .positive({ error: 'O ID de categoria deve ser positivo' });
+import * as zodParam from '../utils/zod-param.js';
 
 const categoriaSchema = z.object({
   titulo: z
@@ -19,7 +12,7 @@ const categoriaSchema = z.object({
 
 export async function criarCategoria(requestBody, projetoId, usuario) {
   const { titulo } = categoriaSchema.parse(requestBody);
-  const projeto_id = projetoIDParam.parse(projetoId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await categoriaModel.criar({ titulo }, projeto_id, usuario_id);
@@ -34,8 +27,8 @@ export async function criarCategoria(requestBody, projetoId, usuario) {
 }
 
 export async function excluirCategoria(categoriaId, projetoId, usuario) {
-  const categoria_id = categoriaIDParam.parse(categoriaId);
-  const projeto_id = projetoIDParam.parse(projetoId);
+  const categoria_id = zodParam.categoriaID.parse(categoriaId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await categoriaModel.excluir(categoria_id, projeto_id, usuario_id);

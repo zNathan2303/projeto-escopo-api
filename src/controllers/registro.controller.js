@@ -2,6 +2,7 @@ import z from 'zod';
 import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import * as zodParam from '../utils/zod-param.js';
 
 const tituloField = z
   .string({ error: 'Deve ser uma String' })
@@ -13,14 +14,6 @@ const conteudoField = z.preprocess(
   transformarUndefinedOuStringVaziaEmNull,
   z.string({ error: 'Deve ser uma String' }).nullable(),
 );
-
-const projetoIdParam = z.coerce
-  .number({ error: 'O ID de projeto deve ser um número' })
-  .positive({ error: 'O ID de projeto deve ser positivo' });
-
-const registroIdParam = z.coerce
-  .number({ error: 'O ID de registro deve ser um número' })
-  .positive({ error: 'O ID de registro deve ser positivo' });
 
 const registroSchema = z.object({
   titulo: tituloField,
@@ -36,7 +29,7 @@ const atualizarConteudoSchema = z.object({
 });
 
 export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
-  const id = projetoIdParam.parse(projetoId);
+  const id = zodParam.projetoID.parse(projetoId);
   const usuarioId = usuario.id;
 
   const registros = await registroModel.obterTodosDeUmProjeto(id, usuarioId);
@@ -46,7 +39,7 @@ export async function obterRegistrosDeUmProjeto(projetoId, usuario) {
 
 export async function criarRegistro(requestBody, projetoId, usuario) {
   const { conteudo, titulo } = registroSchema.parse(requestBody);
-  const projeto_id = projetoIdParam.parse(projetoId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
   const criador_id = usuario.id;
 
   const resultadoBanco = await registroModel.criar({
@@ -67,8 +60,8 @@ export async function criarRegistro(requestBody, projetoId, usuario) {
 
 export async function atualizarTituloDeRegistro(requestBody, projetoId, registroId, usuario) {
   const { titulo } = atualizarTituloSchema.parse(requestBody);
-  const projeto_id = projetoIdParam.parse(projetoId);
-  const registro_id = registroIdParam.parse(registroId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const registro_id = zodParam.registroID.parse(registroId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await registroModel.atualizarTitulo({
@@ -87,8 +80,8 @@ export async function atualizarTituloDeRegistro(requestBody, projetoId, registro
 
 export async function atualizarConteudoDeRegistro(requestBody, projetoId, registroId, usuario) {
   const { conteudo } = atualizarConteudoSchema.parse(requestBody);
-  const projeto_id = projetoIdParam.parse(projetoId);
-  const registro_id = registroIdParam.parse(registroId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const registro_id = zodParam.registroID.parse(registroId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await registroModel.atualizarTitulo({
@@ -106,8 +99,8 @@ export async function atualizarConteudoDeRegistro(requestBody, projetoId, regist
 }
 
 export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) {
-  const projeto_id = projetoIdParam.parse(projetoId);
-  const registro_id = registroIdParam.parse(registroId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const registro_id = zodParam.registroID.parse(registroId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await registroModel.obterDetalhesDeUm(registro_id, projeto_id, usuario_id);
@@ -122,8 +115,8 @@ export async function obterDetalhesDeUmRegistro(projetoId, registroId, usuario) 
 }
 
 export async function excluirRegistro(projetoId, registroId, usuario) {
-  const projeto_id = projetoIdParam.parse(projetoId);
-  const registro_id = registroIdParam.parse(registroId);
+  const projeto_id = zodParam.projetoID.parse(projetoId);
+  const registro_id = zodParam.registroID.parse(registroId);
   const usuario_id = usuario.id;
 
   const resultadoBanco = await registroModel.excluir(registro_id, projeto_id, usuario_id);
