@@ -1,12 +1,12 @@
 import knex from '../config/database.js';
 
-export async function criar({ titulo, descricao, criador_id }, db = knex) {
+export async function criar({ titulo, descricao, criadorId }, db = knex) {
   const [resultado] = await db.raw(
     `
     INSERT INTO projeto (titulo, descricao, criador_id)
     VALUES (?, ?, ?)
     `,
-    [titulo, descricao, criador_id],
+    [titulo, descricao, criadorId],
   );
 
   return resultado; // Contém affectedRows e insertId

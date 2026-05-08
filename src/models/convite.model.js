@@ -8,14 +8,14 @@ export async function criarVarios(convites, db = knex) {
 }
 
 export async function enviarDinamicamentePorProcedure(
-  { projetoID, destinatarioID, nivelAcessoID, remetenteID },
+  { projetoId, destinatarioId, nivelAcessoId, remetenteId },
   db = knex,
 ) {
   await db.raw(
     `
     CALL enviar_convite(?, ?, ?, ?)
     `,
-    [projetoID, destinatarioID, nivelAcessoID, remetenteID],
+    [projetoId, destinatarioId, nivelAcessoId, remetenteId],
   );
 }
 

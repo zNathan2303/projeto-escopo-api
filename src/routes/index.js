@@ -5,6 +5,7 @@ import projetoRoutes from './projeto.router.js';
 import dashboardRoutes from './dashboard.router.js';
 import registroRoutes from './registro.router.js';
 import categoriaRoutes from './categoria.router.js';
+import documentoRoutes from './documento.router.js';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use(projetoRoutes);
 router.use(dashboardRoutes);
 router.use(registroRoutes);
 router.use(categoriaRoutes);
+router.use(documentoRoutes);
 
 export default router;

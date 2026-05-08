@@ -1,28 +1,20 @@
 import z from 'zod';
 import * as categoriaModel from '../models/categoria.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import * as zodParam from '../utils/zod-param.js';
 
-const projetoIDParam = z.coerce
-  .number({ error: 'O ID de projeto deve ser um número' })
-  .positive({ error: 'O ID de projeto deve ser positivo' });
-
-const categoriaIDParam = z.coerce
-  .number({ error: 'O ID de categoria deve ser um número' })
-  .positive({ error: 'O ID de categoria deve ser positivo' });
-
-const categoriaSchema = z.object({
+const criarCategoriaSchema = z.object({
   titulo: z
     .string({ error: 'Deve ser uma String' })
     .min(1, { error: 'Mínimo 1 caractere' })
     .max(100, { error: 'Máximo 100 caracteres' }),
 });
 
-export async function criarCategoria(requestBody, projetoId, usuario) {
-  const { titulo } = categoriaSchema.parse(requestBody);
-  const projeto_id = projetoIDParam.parse(projetoId);
-  const usuario_id = usuario.id;
+export async function criarCategoria(requestBody, projetoIdParam, usuarioId) {
+  const { titulo } = criarCategoriaSchema.parse(requestBody);
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
 
-  const resultadoBanco = await categoriaModel.criar({ titulo }, projeto_id, usuario_id);
+  const resultadoBanco = await categoriaModel.criar({ titulo, projetoId, usuarioId });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Projeto não encontrado');
@@ -33,12 +25,11 @@ export async function criarCategoria(requestBody, projetoId, usuario) {
   return categoriaId;
 }
 
-export async function excluirCategoria(categoriaId, projetoId, usuario) {
-  const categoria_id = categoriaIDParam.parse(categoriaId);
-  const projeto_id = projetoIDParam.parse(projetoId);
-  const usuario_id = usuario.id;
+export async function excluirCategoria(categoriaIdParam, projetoIdParam, usuarioId) {
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
 
-  const resultadoBanco = await categoriaModel.excluir(categoria_id, projeto_id, usuario_id);
+  const resultadoBanco = await categoriaModel.excluir(categoriaId, projetoId, usuarioId);
 
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Projeto ou categoria não encontrada');

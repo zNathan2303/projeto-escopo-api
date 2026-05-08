@@ -245,6 +245,44 @@ components:
           items:
             $ref: '#/components/schemas/Documento'
 
+    ProjetoDocumentacaoResponse:
+      type: object
+      properties:
+        projeto:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            categorias:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  nome:
+                    type: string
+                    example: Plataforma Web
+                  documentos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        titulo:
+                          type: string
+                          example: Documento de Requisitos
+                        ultima_alteracao:
+                          type: string
+                          example: '2025-02-12 23:00:00.000000'
+                        quantidade_versoes:
+                          type: integer
+                          example: 5
+
     Reuniao:
       type: object
       properties:
@@ -372,6 +410,16 @@ components:
           type: string
           format: date-time
           example: '2026-04-14T10:00:00Z'
+
+    DocumentoVersaoRequest:
+      type: object
+      required:
+        - conteudo
+      properties:
+        conteudo:
+          type: string
+          example: Conteúdo da nova versão do documento
+          minLength: 1
 
     ProjetoRequest:
       type: object
@@ -965,7 +1013,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/documentacao:
+  /api/v1/projeto/{id}/categorias/documentos:
     get:
       tags:
         - Documento
@@ -985,23 +1033,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CategoriaDocumentacao'
-        '400':
-          description: Requisição mal formulada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
+                $ref: '#/components/schemas/ProjetoDocumentacaoResponse'
         '401':
           description: Não autenticado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -1963,16 +1997,12 @@ paths:
               type: object
               required:
                 - titulo
-                - conteudo
               properties:
                 titulo:
                   type: string
                   example: Documento de Requisitos
                   minLength: 1
                   maxLength: 150
-                conteudo:
-                  type: string
-                  example: Conteúdo do documento
       responses:
         '201':
           description: Documento criado
@@ -1995,7 +2025,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou categoria não encontrado
+          description: Não foi encontrada a categoria pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2071,14 +2101,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2130,7 +2154,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2203,7 +2227,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2221,10 +2245,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
   /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/conteudo:
-    patch:
+    post:
       tags:
         - Documento
-      summary: Atualiza o conteúdo de um documento
+      summary: Adiciona uma nova versão do conteúdo de um documento
       security:
         - bearerAuth: []
       parameters:
@@ -2257,11 +2281,11 @@ paths:
               properties:
                 conteudo:
                   type: string
-                  example: Conteúdo do documento atualizado
+                  example: Conteúdo da nova versão do documento
                   minLength: 1
       responses:
-        '204':
-          description: Conteúdo atualizado
+        '201':
+          description: Nova versão criada
         '400':
           description: Requisição mal formulada
           content:
@@ -2281,7 +2305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento para criar uma nova versão
           content:
             application/json:
               schema:
@@ -2339,14 +2363,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado versões do respectivo documento
           content:
             application/json:
               schema:
