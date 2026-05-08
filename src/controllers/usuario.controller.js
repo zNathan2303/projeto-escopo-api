@@ -2,6 +2,15 @@ import z from 'zod';
 import * as usuarioModel from '../models/usuario.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
+import bcrypt from 'bcrypt';
+
+const atualizarSenhaSchema = z.object({
+  senha: z
+    .string({ error: 'Deve ser uma String' })
+    .trim()
+    .min(8, { error: 'Mínimo 8 caracteres' })
+    .max(64, { error: 'Máximo 64 caracteres' }),
+});
 
 const nomeSchema = z.object({
   nome: z
@@ -61,4 +70,12 @@ export async function obterUsuarioPorEmail(email) {
   }
 
   return usuario;
+}
+
+export async function atualizarSenhaDoUsuario(requestBody, usuarioId) {
+  const { senha } = atualizarSenhaSchema.parse(requestBody);
+
+  const senhaHash = await bcrypt.hash(senha, 10);
+
+  await usuarioModel.atualizarSenha({ senha: senhaHash, usuarioId });
 }

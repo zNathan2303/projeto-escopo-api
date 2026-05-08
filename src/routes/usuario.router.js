@@ -28,4 +28,10 @@ router.get('/usuario/email/:email', validarToken, async (req, res) => {
   res.status(200).json(usuario);
 });
 
+router.patch('/usuario/senha', validarToken, async (req, res) => {
+  await usuarioController.atualizarSenhaDoUsuario(req.body, req.usuario.id);
+
+  res.sendStatus(204);
+});
+
 export default router;

@@ -94,3 +94,15 @@ export async function obterTodosPorProjetoId(projetoId) {
 
   return usuariosEConvites;
 }
+
+export async function atualizarSenha({ usuarioId, senha }) {
+  await knex.raw(
+    `
+    UPDATE usuario
+      SET senha = ?
+    WHERE id = ?
+      AND status = true
+    `,
+    [senha, usuarioId],
+  );
+}

@@ -770,6 +770,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
+  /api/v1/usuario/senha:
+    patch:
+      tags:
+        - Usuário
+      summary: Altera a senha do usuário autenticado
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - senha_atual
+                - senha_nova
+              properties:
+                senha_atual:
+                  type: string
+                  example: 12345678
+                  maxLength: 64
+                  minLength: 8
+                senha_nova:
+                  type: string
+                  example: 87654321
+                  maxLength: 64
+                  minLength: 8
+      responses:
+        '204':
+          description: Senha alterada
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Senha inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
   /api/v1/usuario:
     delete:
       tags:
