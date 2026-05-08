@@ -93,3 +93,23 @@ export async function desativar({ documentoId, projetoId, categoriaId }) {
 
   return resultado; // Contém affectedRows
 }
+
+export async function atualizarTitulo({ titulo, documentoId, projetoId, categoriaId }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE documento AS d
+    JOIN categoria AS c
+      ON d.categoria_id = c.id
+    JOIN projeto AS p
+      ON p.id = c.projeto_id
+    SET d.titulo = ?
+    WHERE d.id = ?
+      AND d.deletado_em IS NULL
+      AND c.id = ?
+      AND p.id = ?
+    `,
+    [titulo, documentoId, categoriaId, projetoId],
+  );
+
+  return resultado; // Contém affectedRows
+}

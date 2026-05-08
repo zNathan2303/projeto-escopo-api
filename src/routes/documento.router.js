@@ -62,4 +62,23 @@ router.delete(
   },
 );
 
+router.patch(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/titulo',
+  validarToken,
+  validarAcesso,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId } = req.params;
+
+    await documentoController.atualizarTituloDeDocumento(
+      req.body,
+      documentoId,
+      categoriaId,
+      projetoId,
+    );
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;

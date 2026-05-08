@@ -4,7 +4,7 @@ import * as documentoModel from '../models/documento.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import * as zodParam from '../utils/zod-param.js';
 
-const criarDocumentoSchema = z.object({
+const documentoSchema = z.object({
   titulo: z
     .string({ error: 'Deve ser uma String' })
     .trim()
@@ -28,7 +28,7 @@ export async function obterDocumentosDeCadaCategoria(projetoIdParam, usuarioId) 
 }
 
 export async function criarDocumento(requestBody, projetoIdParam, categoriaIdParam) {
-  const { titulo } = criarDocumentoSchema.parse(requestBody);
+  const { titulo } = documentoSchema.parse(requestBody);
   const projetoId = zodParam.projetoId.parse(projetoIdParam);
   const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
 
@@ -67,6 +67,29 @@ export async function desativarDocumento(documentoIdParam, categoriaIdParam, pro
   const documentoId = zodParam.documentoId.parse(documentoIdParam);
 
   const resultadoBanco = await documentoModel.desativar({ categoriaId, documentoId, projetoId });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Não foi encontrado o documento pertencente ao projeto');
+  }
+}
+
+export async function atualizarTituloDeDocumento(
+  requestBody,
+  documentoIdParam,
+  categoriaIdParam,
+  projetoIdParam,
+) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+  const { titulo } = documentoSchema.parse(requestBody);
+
+  const resultadoBanco = await documentoModel.atualizarTitulo({
+    categoriaId,
+    documentoId,
+    projetoId,
+    titulo,
+  });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Não foi encontrado o documento pertencente ao projeto');
