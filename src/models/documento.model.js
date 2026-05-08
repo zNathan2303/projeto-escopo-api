@@ -32,7 +32,7 @@ export async function criar({ titulo, categoriaId, projetoId }, db = knex) {
     [titulo, categoriaId, projetoId],
   );
 
-  return resultado;
+  return resultado; // Contém affectedRows e insertId
 }
 
 export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }) {
@@ -53,6 +53,7 @@ export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }
     JOIN documento_versao AS dv
       ON dv.documento_id = d.id
     WHERE d.id = ?
+      AND d.deletado_em IS NULL
       AND c.id = ?
       AND p.id = ?
       AND dv.id = (
@@ -69,4 +70,26 @@ export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }
   const [documento] = resultado;
 
   return documento;
+}
+
+export async function desativar({ documentoId, projetoId, categoriaId }) {
+  const horarioAtual = new Date();
+
+  const [resultado] = await knex.raw(
+    `
+    UPDATE documento AS d
+    JOIN categoria AS c
+      ON d.categoria_id = c.id
+    JOIN projeto AS p
+      ON p.id = c.projeto_id
+    SET d.deletado_em = ?
+    WHERE d.id = ?
+      AND d.deletado_em IS NULL
+      AND c.id = ?
+      AND p.id = ?
+    `,
+    [horarioAtual, documentoId, categoriaId, projetoId],
+  );
+
+  return resultado; // Contém affectedRows
 }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as documentoController from '../controllers/documento.controller.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
-import { validarToken, validarAcesso } from '../middlewares/auth.js';
+import { validarToken, validarAcesso, validarPermissao } from '../middlewares/auth.js';
 
 const router = Router();
 
@@ -21,10 +21,11 @@ router.post(
   validarToken,
   verificarSeRequestTemBody,
   validarAcesso,
+  validarPermissao([1, 2]),
   async (req, res) => {
     const { categoriaId, projetoId } = req.params;
 
-    await documentoController.criarDocumento(req.body, projetoId, categoriaId, req.usuario.id);
+    await documentoController.criarDocumento(req.body, projetoId, categoriaId);
 
     res.sendStatus(201);
   },
@@ -44,6 +45,20 @@ router.get(
     );
 
     res.status(200).json(documento);
+  },
+);
+
+router.delete(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId',
+  validarToken,
+  validarAcesso,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId } = req.params;
+
+    await documentoController.desativarDocumento(documentoId, categoriaId, projetoId);
+
+    res.sendStatus(204);
   },
 );
 

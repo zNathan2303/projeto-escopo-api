@@ -2,9 +2,7 @@ import z from 'zod';
 import * as categoriaModel from '../models/categoria.model.js';
 import * as documentoModel from '../models/documento.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
-import { validarPermissao } from '../utils/validacoes.js';
 import * as zodParam from '../utils/zod-param.js';
-import ForbiddenError from '../errors/ForbiddenError.js';
 
 const criarDocumentoSchema = z.object({
   titulo: z
@@ -29,16 +27,10 @@ export async function obterDocumentosDeCadaCategoria(projetoIdParam, usuarioId) 
   return projetoComCategoriasEDocumentos;
 }
 
-export async function criarDocumento(requestBody, projetoIdParam, categoriaIdParam, usuarioId) {
+export async function criarDocumento(requestBody, projetoIdParam, categoriaIdParam) {
   const { titulo } = criarDocumentoSchema.parse(requestBody);
   const projetoId = zodParam.projetoId.parse(projetoIdParam);
   const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
-
-  const temPermissao = await validarPermissao({ projetoId, usuarioId, niveisDeAcessoIds: [1, 2] });
-
-  if (!temPermissao) {
-    throw new ForbiddenError('Não possui permissão para acessar esse recurso');
-  }
 
   const resultadoBanco = await documentoModel.criar({ categoriaId, titulo, projetoId });
 
@@ -67,4 +59,16 @@ export async function obterDetalhesDeDocumento(documentoIdParam, categoriaIdPara
   }
 
   return documento;
+}
+
+export async function desativarDocumento(documentoIdParam, categoriaIdParam, projetoIdParam) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+
+  const resultadoBanco = await documentoModel.desativar({ categoriaId, documentoId, projetoId });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Não foi encontrado o documento pertencente ao projeto');
+  }
 }
