@@ -120,4 +120,22 @@ router.get(
   },
 );
 
+router.get(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/historico/:versaoId',
+  validarToken,
+  validarAcesso,
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId, versaoId } = req.params;
+
+    const documento = await documentoController.obterVersaoPorId(
+      versaoId,
+      documentoId,
+      categoriaId,
+      projetoId,
+    );
+
+    res.status(200).json(documento);
+  },
+);
+
 export default router;

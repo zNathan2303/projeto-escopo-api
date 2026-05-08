@@ -150,3 +150,28 @@ export async function obterHistoricoDeVersoes(documentoIdParam, categoriaIdParam
 
   return historico;
 }
+
+export async function obterVersaoPorId(
+  versaoIdParam,
+  documentoIdParam,
+  categoriaIdParam,
+  projetoIdParam,
+) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+  const versaoId = zodParam.documentoVersaoId.parse(versaoIdParam);
+
+  const versaoDoDocumento = await documentoVersaoModel.obterPorId({
+    categoriaId,
+    documentoId,
+    projetoId,
+    versaoId,
+  });
+
+  if (!versaoDoDocumento) {
+    throw new NotFoundError('Versão do documento não encontrada');
+  }
+
+  return versaoDoDocumento;
+}
