@@ -65,6 +65,7 @@ router.delete(
 router.patch(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/titulo',
   validarToken,
+  verificarSeRequestTemBody,
   validarAcesso,
   validarPermissao([1, 2]),
   async (req, res) => {
@@ -78,6 +79,27 @@ router.patch(
     );
 
     res.sendStatus(204);
+  },
+);
+
+router.post(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/conteudo',
+  validarToken,
+  verificarSeRequestTemBody,
+  validarAcesso,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId } = req.params;
+
+    await documentoController.criarNovaVersao(
+      req.body,
+      documentoId,
+      categoriaId,
+      projetoId,
+      req.usuario.id,
+    );
+
+    res.sendStatus(201);
   },
 );
 

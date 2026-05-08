@@ -1,6 +1,7 @@
 import z from 'zod';
 import * as categoriaModel from '../models/categoria.model.js';
 import * as documentoModel from '../models/documento.model.js';
+import * as documentoVersaoModel from '../models/documento-versao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import * as zodParam from '../utils/zod-param.js';
 
@@ -10,6 +11,13 @@ const documentoSchema = z.object({
     .trim()
     .min(1, { error: 'Mínimo 1 caractere' })
     .max(150, { error: 'Máximo 150 caracteres' }),
+});
+
+const documentoVersaoSchema = z.object({
+  conteudo: z
+    .string({ error: 'Deve ser uma String' })
+    .trim()
+    .min(1, { error: 'Mínimo 1 caractere' }),
 });
 
 export async function obterDocumentosDeCadaCategoria(projetoIdParam, usuarioId) {
@@ -94,4 +102,33 @@ export async function atualizarTituloDeDocumento(
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Não foi encontrado o documento pertencente ao projeto');
   }
+}
+
+export async function criarNovaVersao(
+  requestBody,
+  documentoIdParam,
+  categoriaIdParam,
+  projetoIdParam,
+  usuarioId,
+) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+  const { conteudo } = documentoVersaoSchema.parse(requestBody);
+
+  const resultadoBanco = await documentoVersaoModel.criar({
+    categoriaId,
+    conteudo,
+    criadorId: usuarioId,
+    documentoId,
+    projetoId,
+  });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new NotFoundError('Não foi encontrado o documento para criar uma nova versão');
+  }
+
+  const { insertId } = resultadoBanco;
+
+  return { id: insertId };
 }

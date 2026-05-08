@@ -2245,10 +2245,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
   /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/conteudo:
-    patch:
+    post:
       tags:
         - Documento
-      summary: Atualiza o conteúdo de um documento
+      summary: Adiciona uma nova versão do conteúdo de um documento
       security:
         - bearerAuth: []
       parameters:
@@ -2281,11 +2281,11 @@ paths:
               properties:
                 conteudo:
                   type: string
-                  example: Conteúdo do documento atualizado
+                  example: Conteúdo da nova versão do documento
                   minLength: 1
       responses:
-        '204':
-          description: Conteúdo atualizado
+        '201':
+          description: Nova versão criada
         '400':
           description: Requisição mal formulada
           content:

@@ -1,21 +1,19 @@
 import knex from '../config/database.js';
 
-export async function criar({ conteudo, criadorId, documentoId, projetoId }) {
+export async function criar({ conteudo, criadorId, documentoId, projetoId, categoriaId }) {
   const [resultado] = await knex.raw(
     `
     INSERT INTO documento_versao (conteudo, criador_id, documento_id)
-    SELECT ?, ?, ?
-    WHERE EXISTS (
-      SELECT 1
-      FROM usuario_projeto AS up
-      JOIN usuario AS u
-        ON u.id = up.usuario_id
-      WHERE up.projeto_id = ?
-        AND up.usuario_id = ?
-        AND up.nivel_acesso_id IN (1, 2)
-        AND u.status = true
-    )`,
-    [conteudo, criadorId, documentoId, projetoId, criadorId],
+    SELECT ?, ?, d.id
+    FROM documento AS d
+    JOIN categoria AS c
+      ON c.id = d.categoria_id
+    WHERE d.id = ?
+      AND d.deletado_em IS NULL
+      AND c.id = ?
+      AND c.projeto_id = ?
+    `,
+    [conteudo, criadorId, documentoId, categoriaId, projetoId],
   );
 
   return resultado; // Contém affectedRows e insertId
