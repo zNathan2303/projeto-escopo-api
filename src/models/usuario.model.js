@@ -80,3 +80,17 @@ export async function obterPorEmail(email) {
 
   return usuario;
 }
+
+export async function obterTodosPorProjetoId(projetoId) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT * FROM vw_usuarios_projetos
+	  WHERE projeto_id = ?
+    `,
+    [projetoId],
+  );
+
+  const [usuariosEConvites] = resultado;
+
+  return usuariosEConvites;
+}

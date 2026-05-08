@@ -160,6 +160,79 @@ components:
             type: string
           example: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
 
+    ProjetoParticipante:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Ana Livia
+        email:
+          type: string
+          example: ana@email.com
+        projeto_id:
+          type: integer
+          example: 1
+        usuario_id:
+          type: integer
+          example: 1
+        foto_perfil:
+          type: string
+          nullable: true
+          example: null
+        nivel_acesso:
+          type: string
+          example: Gerente de Projeto
+        nivel_acesso_id:
+          type: integer
+          example: 1
+        usuario_projeto_id:
+          type: integer
+          example: 1
+
+    ProjetoParticipantePendente:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Marcos Santos
+        email:
+          type: string
+          example: marcos@email.com
+        projeto_id:
+          type: integer
+          example: 1
+        usuario_id:
+          type: integer
+          example: 3
+        foto_perfil:
+          type: string
+          nullable: true
+          example: null
+        convidado_em:
+          type: string
+          example: '2025-01-01 03:48:00.000000'
+        nivel_acesso:
+          type: string
+          example: Analista de Requisitos
+        nivel_acesso_id:
+          type: integer
+          example: 2
+
+    ProjetoParticipantes:
+      type: object
+      properties:
+        projeto_id:
+          type: integer
+          example: 1
+        participantes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjetoParticipante'
+        pendentes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjetoParticipantePendente'
+
     ProjetoDetail:
       type: object
       properties:
@@ -1006,6 +1079,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{projetoId}/participantes:
+    get:
+      tags:
+        - Projeto
+      summary: Lista participantes e convites pendentes de um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projetoId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjetoParticipantes'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '500':
           description: Erro interno do servidor
           content:

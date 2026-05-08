@@ -1,6 +1,7 @@
 import z from 'zod';
 import * as projetoModel from '../models/projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
+import * as usuarioModel from '../models/usuario.model.js';
 import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
@@ -163,4 +164,12 @@ export async function excluirProjeto(projetoId, usuario) {
   if (resultadoBanco.affectedRows === 0) {
     throw new NotFoundError('Projeto não encontrado');
   }
+}
+
+export async function obterParticipantesDeUmProjeto(projetoIdParam) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+
+  const participantes = await usuarioModel.obterTodosPorProjetoId(projetoId);
+
+  return participantes;
 }
