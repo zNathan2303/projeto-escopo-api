@@ -3,13 +3,17 @@ import * as usuarioModel from '../models/usuario.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import bcrypt from 'bcrypt';
+import BadRequestError from '../errors/BadRequestError.js';
+
+const senha = z
+  .string({ error: 'Deve ser uma String' })
+  .trim()
+  .min(8, { error: 'Mínimo 8 caracteres' })
+  .max(64, { error: 'Máximo 64 caracteres' });
 
 const atualizarSenhaSchema = z.object({
-  senha: z
-    .string({ error: 'Deve ser uma String' })
-    .trim()
-    .min(8, { error: 'Mínimo 8 caracteres' })
-    .max(64, { error: 'Máximo 64 caracteres' }),
+  senha_atual: senha,
+  senha_nova: senha,
 });
 
 const nomeSchema = z.object({
@@ -72,10 +76,21 @@ export async function obterUsuarioPorEmail(email) {
   return usuario;
 }
 
-export async function atualizarSenhaDoUsuario(requestBody, usuarioId) {
-  const { senha } = atualizarSenhaSchema.parse(requestBody);
+export async function atualizarSenhaDoUsuario(requestBody, usuarioId, usuarioEmail) {
+  const { senha_atual, senha_nova } = atualizarSenhaSchema.parse(requestBody);
 
-  const senhaHash = await bcrypt.hash(senha, 10);
+  if (senha_atual === senha_nova) {
+    throw new BadRequestError('A nova senha deve ser diferente da senha atual');
+  }
+
+  const usuario = await usuarioModel.obterComSenhaPorEmail(usuarioEmail);
+
+  const senhaValida = await bcrypt.compare(senha_atual, usuario.senha);
+  if (!senhaValida) {
+    throw new BadRequestError('Senha atual inválida');
+  }
+
+  const senhaHash = await bcrypt.hash(senha_nova, 10);
 
   await usuarioModel.atualizarSenha({ senha: senhaHash, usuarioId });
 }
