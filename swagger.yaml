@@ -2025,7 +2025,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou categoria não encontrado
+          description: Não foi encontrada a categoria pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2102,7 +2102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2154,7 +2154,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2227,7 +2227,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento pertencente ao projeto
           content:
             application/json:
               schema:
@@ -2305,7 +2305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado o documento para criar uma nova versão
           content:
             application/json:
               schema:
@@ -2363,14 +2363,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Não possui permissão para acessar esse recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, categoria ou documento não encontrado
+          description: Não foi encontrado versões do respectivo documento
           content:
             application/json:
               schema:

@@ -132,3 +132,21 @@ export async function criarNovaVersao(
 
   return { id: insertId };
 }
+
+export async function obterHistoricoDeVersoes(documentoIdParam, categoriaIdParam, projetoIdParam) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
+  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+
+  const historico = await documentoVersaoModel.obterVersoesPorDocumentoId({
+    categoriaId,
+    documentoId,
+    projetoId,
+  });
+
+  if (historico.length === 0) {
+    throw new NotFoundError('Não foi encontrado versões do respectivo documento');
+  }
+
+  return historico;
+}

@@ -103,4 +103,21 @@ router.post(
   },
 );
 
+router.get(
+  '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/historico',
+  validarToken,
+  validarAcesso,
+  async (req, res) => {
+    const { categoriaId, documentoId, projetoId } = req.params;
+
+    const historico = await documentoController.obterHistoricoDeVersoes(
+      documentoId,
+      categoriaId,
+      projetoId,
+    );
+
+    res.status(200).json(historico);
+  },
+);
+
 export default router;
