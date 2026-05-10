@@ -2,10 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import router from './src/routes/index.js';
-import { tratarRequestBodyInvalido } from './src/middlewares/request-body.js';
-import { globalErrorHandler } from './src/middlewares/global-error-handler.js';
-import { zodErrorHandler } from './src/middlewares/zod-error.js';
+import router from './routes/index.js';
+import { tratarRequestBodyInvalido } from './middlewares/request-body.js';
+import { globalErrorHandler } from './middlewares/global-error-handler.js';
+import { zodErrorHandler } from './middlewares/zod-error.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
