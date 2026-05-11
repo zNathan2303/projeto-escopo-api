@@ -80,13 +80,17 @@ components:
           example: 1
         projeto:
           type: string
-          example: Meu Projeto
+          example: Sistema de Gestão
         categoria:
           type: string
-          example: Documentação
+          example: Plataforma Web
         documento:
           type: string
-          example: Página Inicial
+          example: Documento de Requisitos
+        ultima_edicao:
+          type: string
+          format: date-time
+          example: '2025-01-03T05:00:00.000Z'
 
     ConviteDoDashboard:
       type: object
@@ -94,16 +98,27 @@ components:
         id:
           type: number
           example: 1
-        titulo:
+        projeto_id:
+          type: number
+          example: 1
+        nome_remetente:
           type: string
-          example: Convite para revisão
-        descricao:
+          example: Nathan
+        nome_projeto:
           type: string
-          example: Revisar o novo módulo de autenticação
-        data:
+          example: Projeto teste1
+        criado_em:
           type: string
-          format: date
-          example: '2026-04-14'
+          example: '12:12:12'
+        status:
+          type: object
+          properties:
+            id:
+              type: number
+              example: 1
+            nome:
+              type: string
+              example: 'pendente'
 
     Dashboard:
       type: object
@@ -398,6 +413,23 @@ components:
           type: string
           example: reuniao
 
+    LinkRequest:
+      type: object
+      required:
+        - url
+        - tipo_link_id
+        - nome
+      properties:
+        url:
+          type: string
+          example: figma.com
+        tipo_link_id:
+          type: integer
+          example: 2
+        nome:
+          type: string
+          example: Link do Figma
+
     Convidado:
       type: object
       properties:
@@ -511,6 +543,76 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IntegranteProjeto'
+
+    Comentario:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        conteudo:
+          type: string
+          example: Hello world comentando aqui dá like favorito se inscreve no canal
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-01T07:30:00Z'
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+        registro_referencia:
+          type: integer
+          nullable: true
+          example: null
+        comentario_tipo:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            nome:
+              type: string
+              example: comentario
+
+    ComentarioTipo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: comentario
+
+    ComentarioRequest:
+      type: object
+      required:
+        - conteudo
+        - criador_id
+        - documento_id
+      properties:
+        conteudo:
+          type: string
+          example: Hello world comentando aqui dá like favorito se inscreve no canal
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+        registro_referencia_id:
+          type: integer
+          nullable: true
+          example: null
+        criador_id:
+          type: integer
+          example: 1
+        documento_id:
+          type: integer
+          example: 1
+        comentario_tipo_id:
+          type: integer
+          nullable: true
+          example: 1
 paths:
   /api/v1/auth/cadastrar:
     post:
@@ -1353,7 +1455,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/titulo:
+  /api/v1/reuniao/{reuniao_id}/titulo:
     patch:
       tags:
         - Reunião
@@ -1361,12 +1463,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
@@ -1409,7 +1505,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou reunião não encontrado
+          description: Reunião não encontrada
           content:
             application/json:
               schema:
@@ -1427,7 +1523,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}:
+  /api/v1/reuniao/{reuniao_id}:
     get:
       tags:
         - Reunião
@@ -1435,12 +1531,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
@@ -1467,7 +1557,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou reunião não encontrado
+          description: Reunião não encontrada
           content:
             application/json:
               schema:
@@ -1479,20 +1569,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-gravacao:
-    patch:
+  /api/v1/reuniao/{reuniao_id}/link:
+    post:
       tags:
         - Reunião
-      summary: Atualiza o link de gravação de uma reunião
+      summary: Adiciona um link adicional a uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
@@ -1504,24 +1588,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - nome
-                - url
-              properties:
-                nome:
-                  type: string
-                  example: Gravação da Reunião
-                  minLength: 1
-                  maxLength: 50
-                url:
-                  type: string
-                  example: https://example.com/recording
-                  minLength: 1
-                  maxLength: 500
+              $ref: '#/components/schemas/LinkRequest'
       responses:
-        '204':
-          description: Link de gravação atualizado
+        '201':
+          description: Link adicional criado
         '400':
           description: Requisição mal formulada
           content:
@@ -1558,35 +1628,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-adicional/{link_adicional_id}:
-    delete:
+  /api/v1/reuniao/{reuniao_id}/link/{link_id}:
+    patch:
       tags:
         - Reunião
-      summary: Remove um link adicional de reunião
+      summary: Atualiza o link de uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
           schema:
             type: integer
           description: ID da reunião
-        - name: link_adicional_id
+        - name: link_id
           in: path
           required: true
           schema:
             type: integer
-          description: ID do link adicional
+          description: ID do link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - url
+              properties:
+                nome:
+                  type: string
+                  example: Gravação da Reunião
+                  minLength: 1
+                  maxLength: 50
+                url:
+                  type: string
+                  example: https://example.com/recording
+                  minLength: 1
+                  maxLength: 500
       responses:
         '204':
-          description: Link adicional excluído
+          description: Link atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '401':
           description: Não autenticado
           content:
@@ -1600,7 +1690,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, reunião ou link adicional não encontrado
+          description: Reunião ou link não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/reuniao/link/{link_id}:
+    delete:
+      tags:
+        - Reunião
+      summary: Remove um link de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: link_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do link
+      responses:
+        '204':
+          description: Link excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Link não encontrado
           content:
             application/json:
               schema:
@@ -1611,7 +1748,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/convidado:
+  /api/v1/reuniao/{reuniao_id}/convidado:
     post:
       tags:
         - Reunião
@@ -1619,12 +1756,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
@@ -1671,7 +1802,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou reunião não encontrado
+          description: Reunião não encontrada
           content:
             application/json:
               schema:
@@ -1688,7 +1819,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/usuario:
+  /api/v1/reuniao/{reuniao_id}/usuario:
     post:
       tags:
         - Reunião
@@ -1696,12 +1827,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
         - name: reuniao_id
           in: path
           required: true
@@ -1742,7 +1867,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto, reunião ou usuário não encontrado
+          description: Reunião ou usuário não encontrado
           content:
             application/json:
               schema:
@@ -2614,13 +2739,92 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-adicional:
-    post:
+  /api/v1/documento/{documento_id}/comentarios:
+    get:
       tags:
-        - Reunião
-      summary: ???FAZER ESSA ROTA DE POST DO LINK ADICIONAL???
+        - Comentário
+      summary: Lista comentários de um documento
       security:
         - bearerAuth: []
+      parameters:
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comentario'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/documento/{documento_id}/comentario:
+    post:
+      tags:
+        - Comentário
+      summary: Cria um comentário em um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComentarioRequest'
       responses:
         '201':
-          description: criado
+          description: Comentário criado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
