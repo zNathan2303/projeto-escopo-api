@@ -17,3 +17,11 @@ export function transformarUndefinedOuStringVaziaEmNull(elemento) {
 
   return elemento;
 }
+
+export function transformarUndefinedEmNull(elemento) {
+  if (elemento === undefined || elemento === null) {
+    return null;
+  }
+
+  return elemento;
+}
