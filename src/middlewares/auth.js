@@ -1,8 +1,5 @@
 import jwt from 'jsonwebtoken';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
-import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
-import NotFoundError from '../errors/NotFoundError.js';
-import * as zodParam from '../utils/zod-param.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 
 export function validarToken(req, res, next) {
@@ -22,24 +19,6 @@ export function validarToken(req, res, next) {
   } catch (err) {
     throw new UnauthorizedError('Token inválido ou expirado');
   }
-}
-
-export async function validarAcesso(req, res, next) {
-  const usuarioId = req.usuario.id;
-  const projetoId = zodParam.projetoId.parse(req.params.projetoId);
-
-  const participacao = await usuarioProjetoModel.buscarParticipacaoDoUsuarioNoProjeto({
-    projetoId,
-    usuarioId,
-  });
-
-  if (!participacao) {
-    throw new NotFoundError('Não foi encontrado o projeto com o ID informado');
-  }
-
-  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
-
-  next();
 }
 
 export function validarPermissao(niveisPermitidos) {
