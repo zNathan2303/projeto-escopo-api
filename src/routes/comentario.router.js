@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 import * as comentarioController from '../controllers/comentario.controller.js';
-import { validarToken } from '../middlewares/auth.js';
-import { verificarParticipacaoPorDocumentoId } from '../models/usuario-projeto.model.js';
+import { validarToken, validarAcessoPorDocumentoId } from '../middlewares/auth.js';
 
 const router = Router();
 
@@ -10,15 +9,17 @@ router.post(
   '/documento/:documentoId/comentario',
   validarToken,
   verificarSeRequestTemBody,
+  validarAcessoPorDocumentoId,
   async (req, res) => {
     const { documentoId } = req.params;
 
-    const resultado = await verificarParticipacaoPorDocumentoId({
+    await comentarioController.criarComentario({
       documentoId,
+      requestBody: req.body,
       usuarioId: req.usuario.id,
     });
 
-    res.status(201).json(resultado);
+    res.sendStatus(201);
   },
 );
 

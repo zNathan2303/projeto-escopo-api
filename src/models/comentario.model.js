@@ -10,14 +10,10 @@ export async function criar({
 }) {
   const [resultado] = await knex.raw(
     `
-    INSERT INTO comentario (
-      conteudo, parent_id, registro_referencia_id,
-      criador_id, documento_id, comentario_tipo_id
-    )
-    SELECT ?, ?, ?, ?, ?, ?
+    CALL criar_comentario(?, ?, ?, ?, ?, ?)
     `,
     [conteudo, parentId, registroReferenciaId, criadorId, documentoId, tipoComentarioId],
   );
 
-  return resultado; // Contém affectedRows e insertId
+  return resultado;
 }

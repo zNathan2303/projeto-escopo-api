@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import * as documentoController from '../controllers/documento.controller.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
-import { validarToken, validarPermissao } from '../middlewares/auth.js';
-import { validarAcessoPorProjetoId } from '../middlewares/validar-acesso.js';
+import { validarToken, validarPermissao, validarAcessoPorProjetoId } from '../middlewares/auth.js';
 
 const router = Router();
 

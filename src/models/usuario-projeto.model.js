@@ -35,6 +35,8 @@ export async function verificarParticipacaoPorDocumentoId({ usuarioId, documento
       ON u.id = up.usuario_id
     WHERE up.usuario_id = ?
       AND d.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
     `,
     [usuarioId, documentoId],
   );

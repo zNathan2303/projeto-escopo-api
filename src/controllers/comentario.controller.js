@@ -1,12 +1,14 @@
 import z from 'zod';
 import * as comentarioModel from '../models/comentario.model.js';
 import { transformarUndefinedEmNull } from '../utils/formatacoes.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 const criarComentarioSchema = z.object({
   conteudo: z
     .string({ error: 'Deve ser uma String' })
     .trim()
-    .min(1, { error: 'Mínimo 1 caractere' }),
+    .min(1, { error: 'Mínimo 1 caractere' })
+    .max(500, { error: 'Mínimo 500 caracteres' }),
   parent_id: z.preprocess(
     transformarUndefinedEmNull,
     z
@@ -23,27 +25,49 @@ const criarComentarioSchema = z.object({
   ),
   comentario_tipo_id: z
     .number({ error: 'O ID do tipo de comentário deve ser um número' })
-    .positive({ error: 'O ID do tipo de comentário deve ser positivo' }),
+    .positive({ error: 'O ID do tipo de comentário deve ser positivo' })
+    .max(3, { error: 'O ID do tipo de comentário deve ser um número até 3' }),
 });
 
 export async function criarComentario({ requestBody, documentoId, usuarioId }) {
   const { comentario_tipo_id, conteudo, parent_id, registro_referencia_id } =
     criarComentarioSchema.parse(requestBody);
 
-  const resultadoBanco = await comentarioModel.criar({
-    conteudo,
-    criadorId: usuarioId,
-    documentoId,
-    parentId: parent_id,
-    registroReferenciaId: registro_referencia_id,
-    tipoComentarioId: comentario_tipo_id,
-  });
+  if (comentario_tipo_id === 1 && (registro_referencia_id !== null || parent_id !== null)) {
+    throw new BadRequestError(
+      'Comentário padrão não aceita referência para registro nem para outro comentário',
+    );
+  }
 
-  // if (resultadoBanco.affectedRows === 0) {
-  //   throw new
-  // }
+  if (comentario_tipo_id === 2 && (registro_referencia_id !== null || parent_id === null)) {
+    throw new BadRequestError(
+      'Comentário do tipo resposta deve possuir referência para outro comentário (parent_id) e não deve possuir referência para algum registro',
+    );
+  }
 
-  const { insertId } = resultadoBanco;
+  if (comentario_tipo_id === 3 && (registro_referencia_id === null || parent_id !== null)) {
+    throw new BadRequestError(
+      'Comentário do tipo sugestão deve possuir referência para algum registro e não deve possuir referência para outro comentário (parent_id)',
+    );
+  }
 
-  return insertId;
+  try {
+    const resultadoBanco = await comentarioModel.criar({
+      conteudo,
+      criadorId: usuarioId,
+      documentoId,
+      parentId: parent_id,
+      registroReferenciaId: registro_referencia_id,
+      tipoComentarioId: comentario_tipo_id,
+    });
+
+    return resultadoBanco.insertId;
+  } catch (error) {
+    // Erro lançado pela procedure
+    if (error.sqlState === '45000') {
+      throw new BadRequestError(error.sqlMessage);
+    }
+
+    throw error;
+  }
 }
