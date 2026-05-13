@@ -23,4 +23,17 @@ router.post(
   },
 );
 
+router.get(
+  '/documento/:documentoId/comentarios',
+  validarToken,
+  validarAcessoPorDocumentoId,
+  async (req, res) => {
+    const { documentoId } = req.params;
+
+    const comentarios = await comentarioController.obterComentariosPorDocumentoId(documentoId);
+
+    res.status(200).json(comentarios);
+  },
+);
+
 export default router;

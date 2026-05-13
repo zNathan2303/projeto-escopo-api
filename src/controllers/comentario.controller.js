@@ -2,6 +2,7 @@ import z from 'zod';
 import * as comentarioModel from '../models/comentario.model.js';
 import { transformarUndefinedEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import * as zodParam from '../utils/zod-param.js';
 
 const criarComentarioSchema = z.object({
   conteudo: z
@@ -70,4 +71,12 @@ export async function criarComentario({ requestBody, documentoId, usuarioId }) {
 
     throw error;
   }
+}
+
+export async function obterComentariosPorDocumentoId(documentoIdParam) {
+  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+
+  const comentarios = await comentarioModel.obterPorDocumentoId(documentoId);
+
+  return comentarios;
 }

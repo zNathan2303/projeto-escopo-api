@@ -17,3 +17,11 @@ export async function criar({
 
   return resultado;
 }
+
+export async function obterPorDocumentoId(documentoId) {
+  const [resultado] = await knex.raw(`SELECT * FROM vw_comentarios WHERE documento_id = ?`, [
+    documentoId,
+  ]);
+
+  return resultado;
+}
