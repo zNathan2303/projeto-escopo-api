@@ -589,8 +589,6 @@ components:
       type: object
       required:
         - conteudo
-        - criador_id
-        - documento_id
       properties:
         conteudo:
           type: string
@@ -603,12 +601,6 @@ components:
           type: integer
           nullable: true
           example: null
-        criador_id:
-          type: integer
-          example: 1
-        documento_id:
-          type: integer
-          example: 1
         comentario_tipo_id:
           type: integer
           nullable: true

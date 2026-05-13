@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
-import { validarAcesso, validarToken, validarPermissao } from '../middlewares/auth.js';
+import { validarToken, validarPermissao, validarAcessoPorProjetoId } from '../middlewares/auth.js';
 import * as projetoController from '../controllers/projeto.controller.js';
 
 const router = Router();
@@ -44,7 +44,7 @@ router.delete('/projeto/:id', validarToken, async (req, res) => {
 router.get(
   '/projeto/:projetoId/participantes',
   validarToken,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   validarPermissao([1, 2]),
   async (req, res) => {
     const { projetoId } = req.params;

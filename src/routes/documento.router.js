@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as documentoController from '../controllers/documento.controller.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
-import { validarToken, validarAcesso, validarPermissao } from '../middlewares/auth.js';
+import { validarToken, validarPermissao, validarAcessoPorProjetoId } from '../middlewares/auth.js';
 
 const router = Router();
 
@@ -20,7 +20,7 @@ router.post(
   '/projeto/:projetoId/categoria/:categoriaId/documento',
   validarToken,
   verificarSeRequestTemBody,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   validarPermissao([1, 2]),
   async (req, res) => {
     const { categoriaId, projetoId } = req.params;
@@ -34,7 +34,7 @@ router.post(
 router.get(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId',
   validarToken,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   async (req, res) => {
     const { categoriaId, documentoId, projetoId } = req.params;
 
@@ -51,7 +51,7 @@ router.get(
 router.delete(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId',
   validarToken,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   validarPermissao([1, 2]),
   async (req, res) => {
     const { categoriaId, documentoId, projetoId } = req.params;
@@ -66,7 +66,7 @@ router.patch(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/titulo',
   validarToken,
   verificarSeRequestTemBody,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   validarPermissao([1, 2]),
   async (req, res) => {
     const { categoriaId, documentoId, projetoId } = req.params;
@@ -86,7 +86,7 @@ router.post(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/conteudo',
   validarToken,
   verificarSeRequestTemBody,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   validarPermissao([1, 2]),
   async (req, res) => {
     const { categoriaId, documentoId, projetoId } = req.params;
@@ -106,7 +106,7 @@ router.post(
 router.get(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/historico',
   validarToken,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   async (req, res) => {
     const { categoriaId, documentoId, projetoId } = req.params;
 
@@ -123,7 +123,7 @@ router.get(
 router.get(
   '/projeto/:projetoId/categoria/:categoriaId/documento/:documentoId/historico/:versaoId',
   validarToken,
-  validarAcesso,
+  validarAcessoPorProjetoId,
   async (req, res) => {
     const { categoriaId, documentoId, projetoId, versaoId } = req.params;
 
