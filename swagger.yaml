@@ -1515,6 +1515,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
+  /api/v1/reuniao/{id}/transcricao:
+    patch:
+      tags:
+        - Reunião
+      summary: Atualiza a transcrição de uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transcricao
+              properties:
+                transcricao:
+                  type: string
+                  example: Transcrição da reunião
+                  minLength: 1
+                  maxLength: 10000
+      responses:
+        '204':
+          description: Transcrição atualizada
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Reunião não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
   /api/v1/reuniao/{id}:
     get:
       tags:

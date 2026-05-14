@@ -37,3 +37,16 @@ export async function atualizarTitulo({ titulo, reuniaoId }) {
 
   return resultado; // Contém affectedRows
 }
+
+export async function atualizarTranscricao({ transcricao, reuniaoId }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE reuniao
+    SET transcricao = ?
+    WHERE id = ?
+    `,
+    [transcricao, reuniaoId],
+  );
+
+  return resultado; // Contém affectedRows
+}

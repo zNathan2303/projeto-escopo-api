@@ -8,12 +8,21 @@ const tituloReuniaoCampo = z
   .min(1, { error: 'Mínimo 1 caractere' })
   .max(150, { error: 'Máximo 150 caracteres' });
 
+const transcricaoReuniaoCampo = z
+  .string({ error: 'Deve ser uma String' })
+  .min(1, { error: 'Mínimo 1 caractere' })
+  .max(10000, { error: 'Máximo 10000 caracteres' });
+
 const criarReuniaoSchema = z.object({
   titulo: tituloReuniaoCampo,
 });
 
 const atualizarTituloReuniaoSchema = z.object({
   titulo: tituloReuniaoCampo,
+});
+
+const atualizarTranscricaoReuniaoSchema = z.object({
+  transcricao: transcricaoReuniaoCampo,
 });
 
 export async function obterReunioesPorProjetoId(projetoIdParam) {
@@ -43,5 +52,16 @@ export async function atualizarTitulo({ requestBody, reuniaoIdParam }) {
 
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível atualizar o título da reunião');
+  }
+}
+
+export async function atualizarTranscricao({ requestBody, reuniaoIdParam }) {
+  const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
+  const { transcricao } = atualizarTranscricaoReuniaoSchema.parse(requestBody);
+
+  const resultadoBanco = await reuniaoModel.atualizarTranscricao({ reuniaoId, transcricao });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível atualizar a transcrição da reunião');
   }
 }

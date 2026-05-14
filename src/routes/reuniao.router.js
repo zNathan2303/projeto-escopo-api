@@ -53,4 +53,22 @@ router.patch(
   },
 );
 
+router.patch(
+  '/reuniao/:reuniaoId/transcricao',
+  validarToken,
+  verificarSeRequestTemBody,
+  validarAcessoPorReuniaoId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { reuniaoId } = req.params;
+
+    await reuniaoController.atualizarTranscricao({
+      requestBody: req.body,
+      reuniaoIdParam: reuniaoId,
+    });
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;
