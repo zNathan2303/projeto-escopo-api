@@ -1,85 +1,103 @@
 import { Router } from 'express';
-import { validarToken } from '../middlewares/auth.js';
+import {
+  validarToken,
+  validarAcessoPorProjetoId,
+  validarAcessoPorRegistroId,
+  validarPermissao,
+} from '../middlewares/auth.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 import * as registroController from '../controllers/registro.controller.js';
 
 const router = Router();
 
-router.get('/projeto/:projetoId/registros', validarToken, async (req, res) => {
-  const { projetoId } = req.params;
+router.get(
+  '/projeto/:projetoId/registros',
+  validarToken,
+  validarAcessoPorProjetoId,
+  async (req, res) => {
+    const { projetoId } = req.params;
 
-  const registros = await registroController.obterRegistrosDeUmProjeto(projetoId, req.usuario);
+    const registros = await registroController.obterRegistrosPorProjetoId(projetoId);
 
-  res.status(200).json(registros);
-});
+    res.status(200).json(registros);
+  },
+);
 
 router.post(
   '/projeto/:projetoId/registro',
   validarToken,
   verificarSeRequestTemBody,
+  validarAcessoPorProjetoId,
+  validarPermissao([1, 2]),
   async (req, res) => {
     const { projetoId } = req.params;
 
-    await registroController.criarRegistro(req.body, projetoId, req.usuario);
+    await registroController.criarRegistro({
+      projetoIdParam: projetoId,
+      requestBody: req.body,
+      usuarioId: req.usuario.id,
+    });
 
     res.sendStatus(201);
   },
 );
 
 router.patch(
-  '/projeto/:projetoId/registro/:registroId/titulo',
+  '/registro/:registroId/titulo',
   validarToken,
   verificarSeRequestTemBody,
+  validarAcessoPorRegistroId,
+  validarPermissao([1, 2]),
   async (req, res) => {
-    const { projetoId, registroId } = req.params;
+    const { registroId } = req.params;
 
-    await registroController.atualizarTituloDeRegistro(
-      req.body,
-      projetoId,
-      registroId,
-      req.usuario,
-    );
+    await registroController.atualizarTituloDeRegistro({
+      registroIdParam: registroId,
+      requestBody: req.body,
+    });
 
     res.sendStatus(204);
   },
 );
 
 router.patch(
-  '/projeto/:projetoId/registro/:registroId/conteudo',
+  '/registro/:registroId/conteudo',
   validarToken,
   verificarSeRequestTemBody,
+  validarAcessoPorRegistroId,
+  validarPermissao([1, 2]),
   async (req, res) => {
-    const { projetoId, registroId } = req.params;
+    const { registroId } = req.params;
 
-    await registroController.atualizarTituloDeRegistro(
-      req.body,
-      projetoId,
-      registroId,
-      req.usuario,
-    );
+    await registroController.atualizarConteudoDeRegistro({
+      registroIdParam: registroId,
+      requestBody: req.body,
+    });
 
     res.sendStatus(204);
   },
 );
 
-router.get('/projeto/:projetoId/registro/:registroId', validarToken, async (req, res) => {
-  const { projetoId, registroId } = req.params;
+router.get('/registro/:registroId', validarToken, validarAcessoPorRegistroId, async (req, res) => {
+  const { registroId } = req.params;
 
-  const registro = await registroController.obterDetalhesDeUmRegistro(
-    projetoId,
-    registroId,
-    req.usuario,
-  );
+  const registro = await registroController.obterDetalhesDeUmRegistro(registroId);
 
   res.status(200).json(registro);
 });
 
-router.delete('/projeto/:projetoId/registro/:registroId', validarToken, async (req, res) => {
-  const { projetoId, registroId } = req.params;
+router.delete(
+  '/registro/:registroId',
+  validarToken,
+  validarAcessoPorRegistroId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { registroId } = req.params;
 
-  await registroController.excluirRegistro(projetoId, registroId, req.usuario);
+    await registroController.excluirRegistro(registroId);
 
-  res.sendStatus(204);
-});
+    res.sendStatus(204);
+  },
+);
 
 export default router;

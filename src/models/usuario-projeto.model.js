@@ -43,3 +43,25 @@ export async function verificarParticipacaoPorDocumentoId({ usuarioId, documento
 
   return resultado[0];
 }
+
+export async function verificarParticipacaoPorRegistroId({ usuarioId, registroId }) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT up.nivel_acesso_id
+    FROM usuario_projeto AS up
+    JOIN projeto AS p
+      ON p.id = up.projeto_id
+    JOIN registro AS r
+      ON r.projeto_id = p.id
+    JOIN usuario AS u
+      ON u.id = up.usuario_id
+    WHERE up.usuario_id = ?
+      AND r.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
+    `,
+    [usuarioId, registroId],
+  );
+
+  return resultado[0];
+}
