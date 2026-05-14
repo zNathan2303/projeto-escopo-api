@@ -38,6 +38,7 @@ export async function verificarParticipacaoPorDocumentoId({ usuarioId, documento
       AND u.status = true
       AND p.deletado_em IS NULL
       AND d.deletado_em IS NULL
+      AND c.deletado_em IS NULL
     `,
     [usuarioId, documentoId],
   );
@@ -82,6 +83,7 @@ export async function verificarParticipacaoPorCategoriaId({ usuarioId, categoria
       AND c.id = ?
       AND u.status = true
       AND p.deletado_em IS NULL
+      AND c.deletado_em IS NULL
     `,
     [usuarioId, categoriaId],
   );
@@ -109,6 +111,7 @@ export async function verificarParticipacaoPorDocumentoVersaoId({ usuarioId, doc
       AND u.status = true
       AND p.deletado_em IS NULL
       AND d.deletado_em IS NULL
+      AND c.deletado_em IS NULL
     `,
     [usuarioId, documentoVersaoId],
   );

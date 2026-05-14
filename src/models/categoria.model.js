@@ -1,49 +1,27 @@
 import knex from '../config/database.js';
 
-export async function criar({ titulo, projetoId, usuarioId }) {
+export async function criar({ titulo, projetoId }) {
   const [resultado] = await knex.raw(
     `
     INSERT INTO categoria (titulo, projeto_id)
-    SELECT ?, ?
-    WHERE EXISTS (
-      SELECT 1
-      FROM usuario_projeto AS up
-      JOIN projeto AS p
-        ON p.id = up.projeto_id
-      JOIN usuario AS u
-        ON u.id = up.usuario_id
-      WHERE up.projeto_id = ?
-        AND up.usuario_id = ?
-        AND up.nivel_acesso_id IN (1, 2)
-        AND u.status = true
-        AND p.deletado_em IS NULL
-    )`,
-    [titulo, projetoId, projetoId, usuarioId],
+    VALUES (?, ?)
+    `,
+    [titulo, projetoId],
   );
 
   return resultado; // Contém affectedRows e insertId
 }
 
-export async function excluir(categoriaId, projetoId, usuarioId) {
+export async function desativar(categoriaId) {
+  const horarioAtual = new Date();
+
   const [resultado] = await knex.raw(
     `
-    DELETE FROM categoria
+    UPDATE categoria
+    SET deletado_em = ?
     WHERE id = ?
-      AND projeto_id = ?
-    AND EXISTS (
-      SELECT 1
-      FROM usuario_projeto AS up
-      JOIN projeto AS p
-        ON p.id = up.projeto_id
-      JOIN usuario AS u
-        ON u.id = up.usuario_id
-      WHERE up.projeto_id = ?
-        AND up.usuario_id = ?
-        AND up.nivel_acesso_id IN (1, 2)
-        AND u.status = true
-        AND p.deletado_em IS NULL
-    )`,
-    [categoriaId, projetoId, projetoId, usuarioId],
+    `,
+    [horarioAtual, categoriaId],
   );
 
   return resultado; // Contém affectedRows

@@ -2225,7 +2225,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}:
+  /api/v1/projeto/categoria/{id}:
     delete:
       tags:
         - Categoria
@@ -2234,12 +2234,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
           in: path
           required: true
           schema:
