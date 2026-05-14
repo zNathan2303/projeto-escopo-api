@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import * as reuniaoController from '../controllers/reuniao.controller.js';
-import { validarAcessoPorProjetoId, validarPermissao, validarToken } from '../middlewares/auth.js';
+import {
+  validarAcessoPorProjetoId,
+  validarAcessoPorReuniaoId,
+  validarPermissao,
+  validarToken,
+} from '../middlewares/auth.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 
 const router = Router();
@@ -30,6 +35,21 @@ router.post(
     await reuniaoController.criarReuniao({ projetoIdParam: projetoId, requestBody: req.body });
 
     res.sendStatus(201);
+  },
+);
+
+router.patch(
+  '/reuniao/:reuniaoId/titulo',
+  validarToken,
+  verificarSeRequestTemBody,
+  validarAcessoPorReuniaoId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { reuniaoId } = req.params;
+
+    await reuniaoController.atualizarTitulo({ requestBody: req.body, reuniaoIdParam: reuniaoId });
+
+    res.sendStatus(204);
   },
 );
 

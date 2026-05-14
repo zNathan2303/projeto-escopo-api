@@ -24,3 +24,16 @@ export async function criar({ titulo, projetoId }) {
 
   return resultado; // Contém affectedRows e insertId
 }
+
+export async function atualizarTitulo({ titulo, reuniaoId }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE reuniao
+    SET titulo = ?
+    WHERE id = ?
+    `,
+    [titulo, reuniaoId],
+  );
+
+  return resultado; // Contém affectedRows
+}

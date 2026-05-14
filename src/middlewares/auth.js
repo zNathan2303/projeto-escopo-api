@@ -127,3 +127,21 @@ export async function validarAcessoPorDocumentoVersaoId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorReuniaoId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const reuniaoId = zodParam.reuniaoId.parse(req.params.reuniaoId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorReuniaoId({
+    reuniaoId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError('Não foi encontrado a reunião com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}

@@ -3,11 +3,17 @@ import * as reuniaoModel from '../models/reuniao.model.js';
 import * as zodParam from '../utils/zod-param.js';
 import ApiError from '../errors/ApiError.js';
 
+const tituloReuniaoCampo = z
+  .string({ error: 'Deve ser uma String' })
+  .min(1, { error: 'Mínimo 1 caractere' })
+  .max(150, { error: 'Máximo 150 caracteres' });
+
 const criarReuniaoSchema = z.object({
-  titulo: z
-    .string({ error: 'Deve ser uma String' })
-    .min(1, { error: 'Mínimo 1 caractere' })
-    .max(150, { error: 'Máximo 150 caracteres' }),
+  titulo: tituloReuniaoCampo,
+});
+
+const atualizarTituloReuniaoSchema = z.object({
+  titulo: tituloReuniaoCampo,
 });
 
 export async function obterReunioesPorProjetoId(projetoIdParam) {
@@ -26,5 +32,16 @@ export async function criarReuniao({ requestBody, projetoIdParam }) {
 
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível criar a reunião');
+  }
+}
+
+export async function atualizarTitulo({ requestBody, reuniaoIdParam }) {
+  const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
+  const { titulo } = atualizarTituloReuniaoSchema.parse(requestBody);
+
+  const resultadoBanco = await reuniaoModel.atualizarTitulo({ reuniaoId, titulo });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível atualizar o título da reunião');
   }
 }
