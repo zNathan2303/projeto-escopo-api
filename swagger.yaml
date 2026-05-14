@@ -2266,7 +2266,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento:
+  /api/v1/categoria/{id}/documento:
     post:
       tags:
         - Documento
@@ -2275,12 +2275,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
           in: path
           required: true
           schema:
@@ -2339,7 +2333,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}:
+  /api/v1/documento/{id}:
     get:
       tags:
         - Documento
@@ -2348,18 +2342,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
           in: path
           required: true
           schema:
@@ -2422,18 +2404,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
-          in: path
-          required: true
-          schema:
-            type: integer
           description: ID do documento
       responses:
         '204':
@@ -2462,7 +2432,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/titulo:
+  /api/v1/documento/{id}/titulo:
     patch:
       tags:
         - Documento
@@ -2471,18 +2441,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
           in: path
           required: true
           schema:

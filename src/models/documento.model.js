@@ -20,22 +20,19 @@ export async function obterModificadosRecentemente(usuarioId) {
   return documentos;
 }
 
-export async function criar({ titulo, categoriaId, projetoId }, db = knex) {
+export async function criar({ titulo, categoriaId }, db = knex) {
   const [resultado] = await db.raw(
     `
     INSERT INTO documento (titulo, categoria_id)
-    SELECT ?, c.id
-    FROM categoria AS c
-    WHERE c.id = ?
-      AND c.projeto_id = ?
+    VALUES (?, ?)
     `,
-    [titulo, categoriaId, projetoId],
+    [titulo, categoriaId],
   );
 
   return resultado; // Contém affectedRows e insertId
 }
 
-export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }) {
+export async function obterDetalhesPorId(documentoId) {
   const [resultado] = await knex.raw(
     `
     SELECT
@@ -54,8 +51,6 @@ export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }
       ON dv.documento_id = d.id
     WHERE d.id = ?
       AND d.deletado_em IS NULL
-      AND c.id = ?
-      AND p.id = ?
       AND dv.id = (
         SELECT dv2.id
         FROM documento_versao AS dv2
@@ -64,7 +59,7 @@ export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }
         LIMIT 1
       )
   `,
-    [documentoId, categoriaId, projetoId],
+    [documentoId],
   );
 
   const [documento] = resultado;
@@ -72,43 +67,31 @@ export async function obterDetalhesPorId({ documentoId, projetoId, categoriaId }
   return documento;
 }
 
-export async function desativar({ documentoId, projetoId, categoriaId }) {
+export async function desativar(documentoId) {
   const horarioAtual = new Date();
 
   const [resultado] = await knex.raw(
     `
     UPDATE documento AS d
-    JOIN categoria AS c
-      ON d.categoria_id = c.id
-    JOIN projeto AS p
-      ON p.id = c.projeto_id
     SET d.deletado_em = ?
     WHERE d.id = ?
       AND d.deletado_em IS NULL
-      AND c.id = ?
-      AND p.id = ?
     `,
-    [horarioAtual, documentoId, categoriaId, projetoId],
+    [horarioAtual, documentoId],
   );
 
   return resultado; // Contém affectedRows
 }
 
-export async function atualizarTitulo({ titulo, documentoId, projetoId, categoriaId }) {
+export async function atualizarTitulo({ titulo, documentoId }) {
   const [resultado] = await knex.raw(
     `
     UPDATE documento AS d
-    JOIN categoria AS c
-      ON d.categoria_id = c.id
-    JOIN projeto AS p
-      ON p.id = c.projeto_id
     SET d.titulo = ?
     WHERE d.id = ?
       AND d.deletado_em IS NULL
-      AND c.id = ?
-      AND p.id = ?
     `,
-    [titulo, documentoId, categoriaId, projetoId],
+    [titulo, documentoId],
   );
 
   return resultado; // Contém affectedRows

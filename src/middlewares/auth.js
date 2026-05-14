@@ -91,3 +91,21 @@ export async function validarAcessoPorRegistroId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorCategoriaId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const categoriaId = zodParam.categoriaId.parse(req.params.categoriaId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorCategoriaId({
+    categoriaId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError('Não foi encontrado a categoria com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}
