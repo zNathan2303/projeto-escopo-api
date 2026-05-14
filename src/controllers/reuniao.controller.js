@@ -65,3 +65,11 @@ export async function atualizarTranscricao({ requestBody, reuniaoIdParam }) {
     throw new ApiError('Não foi possível atualizar a transcrição da reunião');
   }
 }
+
+export async function obterDetalhesPorId(reuniaoIdParam) {
+  const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
+
+  const reuniao = await reuniaoModel.obterDetalhesPorId(reuniaoId);
+
+  return reuniao;
+}

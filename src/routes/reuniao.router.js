@@ -71,4 +71,12 @@ router.patch(
   },
 );
 
+router.get('/reuniao/:reuniaoId', validarToken, validarAcessoPorReuniaoId, async (req, res) => {
+  const { reuniaoId } = req.params;
+
+  const reuniao = await reuniaoController.obterDetalhesPorId(reuniaoId);
+
+  res.status(200).json(reuniao);
+});
+
 export default router;

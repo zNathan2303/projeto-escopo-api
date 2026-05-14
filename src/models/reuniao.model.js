@@ -50,3 +50,17 @@ export async function atualizarTranscricao({ transcricao, reuniaoId }) {
 
   return resultado; // Contém affectedRows
 }
+
+export async function obterDetalhesPorId(reuniaoId) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT * FROM vw_reuniao_detalhes
+    WHERE id = ?
+    `,
+    [reuniaoId],
+  );
+
+  const [reuniao] = resultado;
+
+  return reuniao;
+}
