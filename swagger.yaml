@@ -1632,7 +1632,7 @@ paths:
   /api/v1/reuniao/{id}/link:
     post:
       tags:
-        - Reunião
+        - Link (Reunião)
       summary: Adiciona um link adicional a uma reunião
       security:
         - bearerAuth: []
@@ -1691,7 +1691,7 @@ paths:
   /api/v1/reuniao/link/{id}:
     patch:
       tags:
-        - Reunião
+        - Link (Reunião)
       summary: Atualiza o link de uma reunião
       security:
         - bearerAuth: []
@@ -1763,7 +1763,7 @@ paths:
                 $ref: '#/components/schemas/Erro'
     delete:
       tags:
-        - Reunião
+        - Link (Reunião)
       summary: Remove um link de reunião
       security:
         - bearerAuth: []

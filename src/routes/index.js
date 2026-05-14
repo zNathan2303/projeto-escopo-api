@@ -8,6 +8,7 @@ import categoriaRoutes from './categoria.router.js';
 import documentoRoutes from './documento.router.js';
 import comentarioRoutes from './comentario.router.js';
 import reuniaoRoutes from './reuniao.router.js';
+import linkRoutes from './link.router.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use(categoriaRoutes);
 router.use(documentoRoutes);
 router.use(comentarioRoutes);
 router.use(reuniaoRoutes);
+router.use(linkRoutes);
 
 export default router;
