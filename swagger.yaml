@@ -1922,6 +1922,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '404':
           description: Projeto não encontrado
           content:
@@ -1940,7 +1946,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/registro/{registro_id}/titulo:
+  /api/v1/registro/{id}/titulo:
     patch:
       tags:
         - Registro
@@ -1949,12 +1955,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: registro_id
           in: path
           required: true
           schema:
@@ -1989,8 +1989,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou registro não encontrado
+          description: Registro não encontrado
           content:
             application/json:
               schema:
@@ -2007,7 +2013,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/registro/{registro_id}/conteudo:
+  /api/v1/registro/{id}/conteudo:
     patch:
       tags:
         - Registro
@@ -2016,12 +2022,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: registro_id
           in: path
           required: true
           schema:
@@ -2055,8 +2055,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou registro não encontrado
+          description: Registro não encontrado
           content:
             application/json:
               schema:
@@ -2073,7 +2079,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/registro/{registro_id}:
+  /api/v1/registro/{id}:
     get:
       tags:
         - Registro
@@ -2082,12 +2088,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: registro_id
           in: path
           required: true
           schema:
@@ -2107,7 +2107,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou registro não encontrado
+          description: Registro não encontrado
           content:
             application/json:
               schema:
@@ -2146,8 +2146,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '404':
-          description: Projeto ou registro não encontrado
+          description: Registro não encontrado
           content:
             application/json:
               schema:

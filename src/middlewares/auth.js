@@ -73,3 +73,21 @@ export async function validarAcessoPorProjetoId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorRegistroId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const registroId = zodParam.registroId.parse(req.params.registroId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorRegistroId({
+    registroId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError('Não foi encontrado o registro com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}
