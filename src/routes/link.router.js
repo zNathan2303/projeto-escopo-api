@@ -40,4 +40,18 @@ router.patch(
   },
 );
 
+router.delete(
+  '/reuniao/link/:linkId',
+  validarToken,
+  validarAcessoPorLinkId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { linkId } = req.params;
+
+    await linkController.excluirLink(linkId);
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;

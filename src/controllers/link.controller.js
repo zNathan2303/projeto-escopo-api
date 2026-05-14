@@ -48,3 +48,13 @@ export async function atualizarLink({ requestBody, linkIdParam }) {
     throw new ApiError('Não foi possível atualizar o link');
   }
 }
+
+export async function excluirLink(linkIdParam) {
+  const linkId = zodParam.linkId.parse(linkIdParam);
+
+  const resultadoBanco = await linkModel.excluir(linkId);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível excluir o link');
+  }
+}

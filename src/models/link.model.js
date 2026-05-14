@@ -24,3 +24,15 @@ export async function atualizarCampos({ url, nome, linkId }) {
 
   return resultado; // Contém affectedRows
 }
+
+export async function excluir(linkId) {
+  const [resultado] = await knex.raw(
+    `
+    DELETE FROM link
+    WHERE id = ?
+    `,
+    [linkId],
+  );
+
+  return resultado; // Contém affectedRows
+}
