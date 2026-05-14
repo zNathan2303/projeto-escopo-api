@@ -145,3 +145,21 @@ export async function validarAcessoPorReuniaoId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorLinkId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const linkId = zodParam.linkId.parse(req.params.linkId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorLinkId({
+    linkId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError('Não foi encontrado o link com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}

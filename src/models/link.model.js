@@ -11,3 +11,16 @@ export async function criar({ url, nome, tipoLinkId, reuniaoId }) {
 
   return resultado; // Contém affectedRows e insertId
 }
+
+export async function atualizarCampos({ url, nome, linkId }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE link
+    SET url = ?, nome = ?
+    WHERE id = ?
+    `,
+    [url, nome, linkId],
+  );
+
+  return resultado; // Contém affectedRows
+}

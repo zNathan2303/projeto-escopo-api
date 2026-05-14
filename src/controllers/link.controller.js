@@ -22,6 +22,11 @@ const criarLinkSchema = z.object({
   nome: nomeCampo,
 });
 
+const atualizarLinkSchema = z.object({
+  url: urlCampo,
+  nome: nomeCampo,
+});
+
 export async function criarLink({ requestBody, reuniaoIdParam }) {
   const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
   const { nome, tipo_link_id, url } = criarLinkSchema.parse(requestBody);
@@ -30,5 +35,16 @@ export async function criarLink({ requestBody, reuniaoIdParam }) {
 
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível criar o link para a reunião');
+  }
+}
+
+export async function atualizarLink({ requestBody, linkIdParam }) {
+  const linkId = zodParam.linkId.parse(linkIdParam);
+  const { nome, url } = atualizarLinkSchema.parse(requestBody);
+
+  const resultadoBanco = await linkModel.atualizarCampos({ linkId, nome, url });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível atualizar o link');
   }
 }
