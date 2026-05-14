@@ -1515,7 +1515,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/reuniao/{reuniao_id}:
+  /api/v1/reuniao/{id}:
     get:
       tags:
         - Reunião
@@ -1523,7 +1523,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1620,7 +1620,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/{reuniao_id}/link/{link_id}:
+  /api/v1/reuniao/link/{id}:
     patch:
       tags:
         - Reunião
@@ -1628,13 +1628,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da reunião
-        - name: link_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1699,7 +1693,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/link/{link_id}:
+  /api/v1/reuniao/link/{id}:
     delete:
       tags:
         - Reunião
@@ -1707,7 +1701,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: link_id
+        - name: id
           in: path
           required: true
           schema:

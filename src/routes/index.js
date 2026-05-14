@@ -7,6 +7,7 @@ import registroRoutes from './registro.router.js';
 import categoriaRoutes from './categoria.router.js';
 import documentoRoutes from './documento.router.js';
 import comentarioRoutes from './comentario.router.js';
+import reuniaoRoutes from './reuniao.router.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use(registroRoutes);
 router.use(categoriaRoutes);
 router.use(documentoRoutes);
 router.use(comentarioRoutes);
+router.use(reuniaoRoutes);
 
 export default router;
