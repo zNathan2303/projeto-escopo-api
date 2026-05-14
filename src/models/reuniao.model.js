@@ -12,3 +12,15 @@ export async function obterPorProjetoId(projetoId) {
 
   return resultado;
 }
+
+export async function criar({ titulo, projetoId }) {
+  const [resultado] = await knex.raw(
+    `
+    INSERT INTO reuniao (titulo, projeto_id)
+    VALUES (?, ?)
+    `,
+    [titulo, projetoId],
+  );
+
+  return resultado; // Contém affectedRows e insertId
+}
