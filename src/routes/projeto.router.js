@@ -6,40 +6,60 @@ import * as projetoController from '../controllers/projeto.controller.js';
 const router = Router();
 
 router.post('/projeto', validarToken, verificarSeRequestTemBody, async (req, res) => {
-  await projetoController.criarProjeto(req.body, req.usuario);
+  await projetoController.criarProjeto({ requestBody: req.body, usuarioId: req.usuario.id });
 
   res.sendStatus(201);
 });
 
 router.get('/projetos', validarToken, async (req, res) => {
-  const projetos = await projetoController.obterProjetosQueUsuarioParticipa(req.usuario);
+  const projetos = await projetoController.obterProjetosQueUsuarioParticipa(req.usuario.id);
 
   res.status(200).json(projetos);
 });
 
-router.get('/projeto/:id', validarToken, async (req, res) => {
-  const { id } = req.params;
+router.get('/projeto/:projetoId', validarToken, async (req, res) => {
+  const { projetoId } = req.params;
 
-  const projeto = await projetoController.obterDetalhesDeUmProjeto(id, req.usuario);
-
-  res.status(200).json(projeto);
-});
-
-router.put('/projeto/:id', validarToken, verificarSeRequestTemBody, async (req, res) => {
-  const { id } = req.params;
-
-  const projeto = await projetoController.atualizarProjeto(req.body, id, req.usuario);
+  const projeto = await projetoController.obterDetalhesDeUmProjeto({
+    projetoIdParam: projetoId,
+    usuarioId: req.usuario.id,
+  });
 
   res.status(200).json(projeto);
 });
 
-router.delete('/projeto/:id', validarToken, async (req, res) => {
-  const { id } = req.params;
+router.put(
+  '/projeto/:projetoId',
+  validarToken,
+  verificarSeRequestTemBody,
+  validarAcessoPorProjetoId,
+  validarPermissao([1]),
+  async (req, res) => {
+    const { projetoId } = req.params;
 
-  await projetoController.excluirProjeto(id, req.usuario);
+    const projeto = await projetoController.atualizarProjeto({
+      projetoIdParam: projetoId,
+      requestBody: req.body,
+      usuarioId: req.usuario.id,
+    });
 
-  res.sendStatus(204);
-});
+    res.status(200).json(projeto);
+  },
+);
+
+router.delete(
+  '/projeto/:projetoId',
+  validarToken,
+  validarAcessoPorProjetoId,
+  validarPermissao([1]),
+  async (req, res) => {
+    const { projetoId } = req.params;
+
+    await projetoController.desativarProjeto(projetoId);
+
+    res.sendStatus(204);
+  },
+);
 
 router.get(
   '/projeto/:projetoId/participantes',

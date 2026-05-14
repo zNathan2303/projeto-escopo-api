@@ -27,7 +27,7 @@ export async function obterTodosQueUsuarioParticipa(usuarioId) {
   return projetos;
 }
 
-export async function obterDetalhes(projetoId, usuarioId) {
+export async function obterDetalhes({ projetoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     SELECT
@@ -53,48 +53,28 @@ export async function obterDetalhes(projetoId, usuarioId) {
   return projeto;
 }
 
-export async function atualizar({ titulo, descricao, id }, usuarioId, db = knex) {
+export async function atualizar({ titulo, descricao, projetoId }, db = knex) {
   const [resultado] = await db.raw(
     `
     UPDATE projeto
       SET titulo = ?, descricao = ?
     WHERE id = ?
-      AND deletado_em IS NULL
-    AND EXISTS (
-      SELECT 1
-      FROM usuario_projeto AS up
-      JOIN usuario AS u
-        ON u.id = up.usuario_id
-      WHERE up.projeto_id = ?
-        AND up.usuario_id = ?
-        AND up.nivel_acesso_id IN (1)
-        AND u.status = true
-    )`,
-    [titulo, descricao, id, id, usuarioId],
+    `,
+    [titulo, descricao, projetoId],
   );
 
   return resultado; // Contém affectedRows
 }
 
-export async function excluir(projetoId, usuarioId, db = knex) {
+export async function desativar(projetoId, db = knex) {
   const horarioAtual = new Date();
 
   const [resultado] = await db.raw(
     `
     UPDATE projeto SET deletado_em = ?
     WHERE id = ?
-      AND deletado_em IS NULL
-    AND EXISTS (
-      SELECT 1
-      FROM usuario_projeto AS up
-      JOIN usuario AS u
-        ON u.id = up.usuario_id
-      WHERE up.projeto_id = ?
-        AND up.usuario_id = ?
-        AND up.nivel_acesso_id IN (1)
-        AND u.status = true
-    )`,
-    [horarioAtual, projetoId, projetoId, usuarioId],
+    `,
+    [horarioAtual, projetoId],
   );
 
   return resultado; // Contém affectedRows

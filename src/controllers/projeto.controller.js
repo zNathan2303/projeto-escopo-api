@@ -9,6 +9,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 import * as zodParam from '../utils/zod-param.js';
+import ApiError from '../errors/ApiError.js';
 
 const projetoSchema = z.object({
   titulo: z
@@ -35,7 +36,7 @@ const projetoSchema = z.object({
     .optional(),
 });
 
-export async function criarProjeto(requestBody, usuario) {
+export async function criarProjeto({ requestBody, usuarioId }) {
   const projeto = projetoSchema.parse(requestBody);
 
   const niveisAcessoIDs = await obterIDsDeNiveisAcesso(knex);
@@ -45,7 +46,7 @@ export async function criarProjeto(requestBody, usuario) {
       {
         titulo: projeto.titulo,
         descricao: projeto.descricao,
-        criadorId: usuario.id,
+        criadorId: usuarioId,
       },
       trx,
     );
@@ -56,7 +57,7 @@ export async function criarProjeto(requestBody, usuario) {
       return;
     }
 
-    const integrantes = projeto.integrantes.filter((integrante) => integrante.id !== usuario.id);
+    const integrantes = projeto.integrantes.filter((integrante) => integrante.id !== usuarioId);
 
     if (integrantes.length === 0) {
       return;
@@ -75,7 +76,7 @@ export async function criarProjeto(requestBody, usuario) {
         projeto_id: projetoId,
         destinatario_id: integrante.id,
         nivel_acesso_id: integrante.nivel_acesso_id,
-        remetente_id: usuario.id,
+        remetente_id: usuarioId,
       };
     });
 
@@ -91,36 +92,35 @@ export async function criarProjeto(requestBody, usuario) {
   });
 }
 
-export async function obterProjetosQueUsuarioParticipa(usuario) {
-  const projetos = await projetoModel.obterTodosQueUsuarioParticipa(usuario.id);
+export async function obterProjetosQueUsuarioParticipa(usuarioId) {
+  const projetos = await projetoModel.obterTodosQueUsuarioParticipa(usuarioId);
 
   return projetos;
 }
 
-export async function obterDetalhesDeUmProjeto(projetoId, usuario) {
-  const id = zodParam.projetoId.parse(projetoId);
+export async function obterDetalhesDeUmProjeto({ projetoIdParam, usuarioId }) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
 
-  const projeto = await projetoModel.obterDetalhes(id, usuario.id);
+  const projeto = await projetoModel.obterDetalhes({ projetoId, usuarioId });
 
   if (!projeto) {
-    throw new NotFoundError('Projeto não encontrado');
+    throw new NotFoundError('Projeto com o ID informado não encontrado');
   }
 
   return projeto;
 }
 
-export async function atualizarProjeto(requestBody, projetoId, usuario) {
-  const id = zodParam.projetoId.parse(projetoId);
+export async function atualizarProjeto({ requestBody, projetoIdParam, usuarioId }) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
   const projeto = projetoSchema.parse(requestBody);
 
   const { descricao, titulo, integrantes } = projeto;
 
   return await knex.transaction(async (trx) => {
-    const resultadoBanco = await projetoModel.atualizar({ descricao, titulo, id }, usuario.id, trx);
+    const resultadoBanco = await projetoModel.atualizar({ descricao, titulo, projetoId }, trx);
 
-    // Usuário não modificou nada, então não foi encontrado um projeto que ele possua acesso para modificar
     if (resultadoBanco.affectedRows === 0) {
-      throw new NotFoundError('Não possui permissão para acessar esse recurso');
+      throw new ApiError('Não foi possível atualizar o projeto');
     }
 
     const convitesAEnviar = [];
@@ -129,8 +129,8 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
       const convite = {
         destinatarioId: integrante.id,
         nivelAcessoId: integrante.nivel_acesso_id,
-        projetoId: id,
-        remetenteId: usuario.id,
+        projetoId: projetoId,
+        remetenteId: usuarioId,
       };
 
       convitesAEnviar.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));
@@ -152,17 +152,17 @@ export async function atualizarProjeto(requestBody, projetoId, usuario) {
       throw error;
     }
 
-    return { id, descricao, titulo };
+    return { projetoId, descricao, titulo };
   });
 }
 
-export async function excluirProjeto(projetoId, usuario) {
-  const id = zodParam.projetoId.parse(projetoId);
+export async function desativarProjeto(projetoIdParam) {
+  const projetoId = zodParam.projetoId.parse(projetoIdParam);
 
-  const resultadoBanco = await projetoModel.excluir(id, usuario.id);
+  const resultadoBanco = await projetoModel.desativar(projetoId);
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new NotFoundError('Projeto não encontrado');
+    throw new ApiError('Não foi possível excluir o projeto');
   }
 }
 
