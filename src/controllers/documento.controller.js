@@ -87,28 +87,18 @@ export async function atualizarTituloDeDocumento({ requestBody, documentoIdParam
   }
 }
 
-export async function criarNovaVersao(
-  requestBody,
-  documentoIdParam,
-  categoriaIdParam,
-  projetoIdParam,
-  usuarioId,
-) {
-  const projetoId = zodParam.projetoId.parse(projetoIdParam);
-  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+export async function criarNovaVersao({ requestBody, documentoIdParam, usuarioId }) {
   const documentoId = zodParam.documentoId.parse(documentoIdParam);
   const { conteudo } = documentoVersaoSchema.parse(requestBody);
 
   const resultadoBanco = await documentoVersaoModel.criar({
-    categoriaId,
     conteudo,
     criadorId: usuarioId,
     documentoId,
-    projetoId,
   });
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new NotFoundError('Não foi encontrado o documento para criar uma nova versão');
+    throw new ApiError('Não foi possível criar uma nova versão do conteúdo');
   }
 
   const { insertId } = resultadoBanco;
@@ -116,16 +106,10 @@ export async function criarNovaVersao(
   return { id: insertId };
 }
 
-export async function obterHistoricoDeVersoes(documentoIdParam, categoriaIdParam, projetoIdParam) {
-  const projetoId = zodParam.projetoId.parse(projetoIdParam);
-  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
+export async function obterHistoricoDeVersoes(documentoIdParam) {
   const documentoId = zodParam.documentoId.parse(documentoIdParam);
 
-  const historico = await documentoVersaoModel.obterVersoesPorDocumentoId({
-    categoriaId,
-    documentoId,
-    projetoId,
-  });
+  const historico = await documentoVersaoModel.obterVersoesPorDocumentoId(documentoId);
 
   if (historico.length === 0) {
     throw new NotFoundError('Não foi encontrado versões do respectivo documento');
@@ -134,23 +118,10 @@ export async function obterHistoricoDeVersoes(documentoIdParam, categoriaIdParam
   return historico;
 }
 
-export async function obterVersaoPorId(
-  versaoIdParam,
-  documentoIdParam,
-  categoriaIdParam,
-  projetoIdParam,
-) {
-  const projetoId = zodParam.projetoId.parse(projetoIdParam);
-  const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
-  const documentoId = zodParam.documentoId.parse(documentoIdParam);
+export async function obterVersaoPorId(versaoIdParam) {
   const versaoId = zodParam.documentoVersaoId.parse(versaoIdParam);
 
-  const versaoDoDocumento = await documentoVersaoModel.obterPorId({
-    categoriaId,
-    documentoId,
-    projetoId,
-    versaoId,
-  });
+  const versaoDoDocumento = await documentoVersaoModel.obterPorId(versaoId);
 
   if (!versaoDoDocumento) {
     throw new NotFoundError('Versão do documento não encontrada');

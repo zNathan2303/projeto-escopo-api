@@ -2499,7 +2499,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/conteudo:
+  /api/v1/documento/{id}/conteudo:
     post:
       tags:
         - Documento
@@ -2508,18 +2508,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
           in: path
           required: true
           schema:
@@ -2577,7 +2565,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/historico:
+  /api/v1/documento/{id}/versoes:
     get:
       tags:
         - Documento
@@ -2586,18 +2574,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
           in: path
           required: true
           schema:
@@ -2631,7 +2607,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/historico/{versao_id}:
+  /api/v1/documento/versao/{id}:
     get:
       tags:
         - Documento
@@ -2640,24 +2616,6 @@ paths:
         - bearerAuth: []
       parameters:
         - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do projeto
-        - name: categoria_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da categoria
-        - name: documento_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID do documento
-        - name: versao_id
           in: path
           required: true
           schema:
