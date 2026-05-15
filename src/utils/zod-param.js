@@ -47,3 +47,7 @@ export const usuarioId = z.coerce
 export const notificacaoId = z.coerce
   .number({ error: 'O ID de notificação deve ser um número' })
   .positive({ error: 'O ID de notificação deve ser positivo' });
+
+export const usuarioReuniaoId = z.coerce
+  .number({ error: 'O ID do usuario de reunião deve ser um número' })
+  .positive({ error: 'O ID do usuario de reunião deve ser positivo' });

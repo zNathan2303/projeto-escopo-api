@@ -217,3 +217,21 @@ export async function validarAcessoPorConvidadoReuniaoId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorUsuarioReuniaoId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const usuarioReuniaoId = zodParam.usuarioReuniaoId.parse(req.params.usuarioReuniaoId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorUsuarioReuniaoId({
+    usuarioReuniaoId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError('Não foi encontrado o usuário reunião com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}

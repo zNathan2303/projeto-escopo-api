@@ -191,3 +191,27 @@ export async function verificarParticipacaoPorConvidadoReuniaoId({
 
   return resultado[0];
 }
+
+export async function verificarParticipacaoPorUsuarioReuniaoId({ usuarioId, usuarioReuniaoId }) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT up.nivel_acesso_id
+    FROM usuario_projeto AS up
+    JOIN projeto AS p
+      ON p.id = up.projeto_id
+    JOIN reuniao AS r
+      ON r.projeto_id = p.id
+    JOIN reuniao_usuario AS ru
+      ON ru.reuniao_id = r.id
+    JOIN usuario AS u
+      ON u.id = up.usuario_id
+    WHERE up.usuario_id = ?
+      AND ru.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
+    `,
+    [usuarioId, usuarioReuniaoId],
+  );
+
+  return resultado[0];
+}

@@ -31,3 +31,13 @@ export async function criarUsuarioConvidado({ requestBody, reuniaoIdParam }) {
     throw new BadRequestError('Usuário não encontrado');
   }
 }
+
+export async function excluirUsuarioConvidado(usuarioConvidadoIdParam) {
+  const usuarioConvidadoId = zodParam.usuarioConvidadoIdParam.parse(usuarioConvidadoIdParam);
+
+  const resultadoBanco = await usuarioConvidadoModel.excluir(usuarioConvidadoId);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new BadRequestError('Registro de usuário convidado não encontrado');
+  }
+}
