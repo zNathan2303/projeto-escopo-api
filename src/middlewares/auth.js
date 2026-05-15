@@ -4,6 +4,7 @@ import ForbiddenError from '../errors/ForbiddenError.js';
 import * as zodParam from '../utils/zod-param.js';
 import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
+import * as notificacaoModel from '../models/notificacao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 
@@ -108,6 +109,19 @@ export async function validarAcessoPorConviteId(req, res, next) {
   }
 
   req.conviteStatusAtualId = convidado.convite_status_id;
+
+export async function validarAcessoPorNotificacaoId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const notificacaoId = zodParam.notificacaoId.parse(req.params.notificacaoId);
+
+  const notificado = await notificacaoModel.verificarUsuarioPorNotificacaoId({
+    notificacaoId,
+    usuarioId,
+  });
+
+  if (!notificado) {
+    throw new NotFoundError('Não foi encontrado a notificação com o ID informado');
+  }
 
   next();
 }
