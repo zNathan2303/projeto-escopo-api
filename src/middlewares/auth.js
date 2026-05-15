@@ -3,8 +3,10 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import * as zodParam from '../utils/zod-param.js';
 import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
+import * as conviteModel from '../models/convite.model.js';
 import * as notificacaoModel from '../models/notificacao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 export function validarToken(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -92,6 +94,21 @@ export async function validarAcessoPorRegistroId(req, res, next) {
 
   next();
 }
+
+export async function validarAcessoPorConviteId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const conviteId = zodParam.conviteId.parse(req.params.conviteId);
+
+  const convidado = await conviteModel.validarDestinatarioPorConviteId({
+    conviteId,
+    usuarioId,
+  });
+
+  if (!convidado) {
+    throw new NotFoundError('Não foi encontrado o convite com o ID informado');
+  }
+
+  req.conviteStatusAtualId = convidado.convite_status_id;
 
 export async function validarAcessoPorNotificacaoId(req, res, next) {
   const usuarioId = req.usuario.id;

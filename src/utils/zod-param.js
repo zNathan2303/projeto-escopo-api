@@ -20,6 +20,13 @@ export const documentoVersaoId = z.coerce
   .number({ error: 'O ID de versão de documento deve ser um número' })
   .positive({ error: 'O ID de versão de documento deve ser positivo' });
 
+export const conviteId = z.coerce
+  .number({ error: 'O ID de convite deve ser um número' })
+  .positive({ error: 'O ID de convite deve ser positivo' });
+
+export const conviteStatusId = z.coerce
+  .number({ error: 'O ID de convite status deve ser um número' })
+  .positive({ error: 'O ID de convite status deve ser positivo' });
 export const usuarioId = z.coerce
   .number({ error: 'O ID de usuário deve ser um número' })
   .positive({ error: 'O ID de usuário deve ser positivo' });
