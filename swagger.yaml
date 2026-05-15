@@ -1866,7 +1866,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+
   /api/v1/reuniao/convidado/{id}:
+    delete:
+      tags:
+        - Convidado (Reunião)
+      summary: Remove um convidado de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convidado de reunião
+      responses:
+        '204':
+          description: Convidado excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convidado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
     put:
       tags:
         - Convidado (Reunião)
@@ -1940,7 +1975,7 @@ paths:
   /api/v1/reuniao/{id}/usuario:
     post:
       tags:
-        - Reunião
+        - Usuário (Reunião)
       summary: Adiciona um usuário a uma reunião
       security:
         - bearerAuth: []

@@ -46,4 +46,18 @@ router.put(
   },
 );
 
+router.delete(
+  '/reuniao/convidado/:convidadoReuniaoId',
+  validarToken,
+  validarAcessoPorConvidadoReuniaoId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { convidadoReuniaoId } = req.params;
+
+    await convidadoReuniaoController.excluirConvidado(convidadoReuniaoId);
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;

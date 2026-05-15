@@ -24,3 +24,15 @@ export async function atualizar({ convidadoId, nome, cargo }) {
 
   return resultado;
 }
+
+export async function excluir(convidadoId) {
+  const [resultado] = await knex.raw(
+    `
+    DELETE FROM convidado_reuniao
+    WHERE id = ?
+    `,
+    [convidadoId],
+  );
+
+  return resultado;
+}

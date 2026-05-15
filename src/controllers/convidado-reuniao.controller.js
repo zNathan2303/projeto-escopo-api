@@ -43,3 +43,13 @@ export async function atualizarConvidado({ requestBody, convidadoIdParam }) {
     throw new ApiError('Não foi possível atualizar o convidado');
   }
 }
+
+export async function excluirConvidado(convidadoIdParam) {
+  const convidadoId = zodParam.convidadoReuniaoId.parse(convidadoIdParam);
+
+  const resultadoBanco = await convidadoReuniaoModel.excluir(convidadoId);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível excluir o convidado');
+  }
+}
