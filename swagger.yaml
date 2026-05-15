@@ -1400,7 +1400,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/convites/{id}:
+  /api/v1/convite/{id}:
     patch:
       tags:
         - Convite
@@ -1445,6 +1445,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Usuário autenticado não é o destinatário do convite
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convite não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Convite
+      summary: Exclui um convite
+      description: Exclui o convite do usuário autenticado. O destinatário é obtido automaticamente pelo token JWT e só ele pode apagar o convite.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convite
+      responses:
+        '204':
+          description: Convite excluído com sucesso
         '401':
           description: Não autenticado
           content:

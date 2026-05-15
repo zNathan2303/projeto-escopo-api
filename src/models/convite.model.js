@@ -65,13 +65,38 @@ export async function atualizarConviteStatus({ conviteId, usuarioId, novoStatusI
 export async function validarDestinatarioPorConviteId({ usuarioId, conviteId }) {
   const [resultado] = await knex.raw(
     `
-    SELECT 
-    convite.id, convite.destinatario_id, convite.convite_status_id
+    SELECT
+      convite.id, convite.destinatario_id, convite.convite_status_id
     FROM convite
     JOIN projeto
-    WHERE convite.id = ? AND destinatario_id = ? 
+    WHERE convite.id = ? AND destinatario_id = ?
     `,
     [conviteId, usuarioId],
+  );
+
+  return resultado[0];
+}
+
+export async function deletarConvite(conviteId) {
+  const [resultado] = await knex.raw(
+    `
+    DELETE FROM convite
+    WHERE id = ?
+    `,
+    [conviteId],
+  );
+
+  return resultado;
+}
+
+export async function obterPorConviteId(conviteId) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT *
+    FROM convite
+    WHERE id = ?
+    `,
+    [conviteId],
   );
 
   return resultado[0];

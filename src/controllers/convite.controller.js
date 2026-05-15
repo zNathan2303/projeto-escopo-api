@@ -53,3 +53,13 @@ export async function atualizarConviteStatus({
     throw error;
   }
 }
+
+export async function deletarConvite(conviteIdParam) {
+  const conviteId = zodParam.conviteId.parse(conviteIdParam);
+
+  const resultadoBanco = await conviteModel.deletarConvite(conviteId);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível deletar o convite');
+  }
+}

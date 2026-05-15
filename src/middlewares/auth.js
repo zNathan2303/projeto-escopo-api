@@ -6,7 +6,6 @@ import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
 import * as notificacaoModel from '../models/notificacao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
-import BadRequestError from '../errors/BadRequestError.js';
 
 export function validarToken(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -109,6 +108,9 @@ export async function validarAcessoPorConviteId(req, res, next) {
   }
 
   req.conviteStatusAtualId = convidado.convite_status_id;
+
+  next();
+}
 
 export async function validarAcessoPorNotificacaoId(req, res, next) {
   const usuarioId = req.usuario.id;
