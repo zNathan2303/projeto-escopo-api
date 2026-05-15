@@ -1628,6 +1628,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Reunião
+      summary: Exclui uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      responses:
+        '204':
+          description: Reunião excluída
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Reunião não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
 
   /api/v1/reuniao/{id}/link:
     post:

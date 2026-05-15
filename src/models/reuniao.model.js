@@ -64,3 +64,15 @@ export async function obterDetalhesPorId(reuniaoId) {
 
   return reuniao;
 }
+
+export async function excluir(reuniaoId) {
+  const [resultado] = await knex.raw(
+    `
+    DELETE FROM reuniao
+    WHERE id = ?
+    `,
+    [reuniaoId],
+  );
+
+  return resultado;
+}

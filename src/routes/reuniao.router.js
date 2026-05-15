@@ -79,4 +79,18 @@ router.get('/reuniao/:reuniaoId', validarToken, validarAcessoPorReuniaoId, async
   res.status(200).json(reuniao);
 });
 
+router.delete(
+  '/reuniao/:reuniaoId',
+  validarToken,
+  validarAcessoPorReuniaoId,
+  validarPermissao([1, 2]),
+  async (req, res) => {
+    const { reuniaoId } = req.params;
+
+    await reuniaoController.excluirReuniao(reuniaoId);
+
+    res.sendStatus(204);
+  },
+);
+
 export default router;

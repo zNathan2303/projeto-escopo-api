@@ -73,3 +73,13 @@ export async function obterDetalhesPorId(reuniaoIdParam) {
 
   return reuniao;
 }
+
+export async function excluirReuniao(reuniaoIdParam) {
+  const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
+
+  const resultadoBanco = await reuniaoModel.excluir(reuniaoId);
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível excluir a reunião');
+  }
+}
