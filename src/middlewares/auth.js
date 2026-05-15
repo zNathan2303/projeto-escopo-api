@@ -3,6 +3,7 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import * as zodParam from '../utils/zod-param.js';
 import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
+import * as conviteModel from '../models/convite.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 export function validarToken(req, res, next) {
@@ -34,6 +35,22 @@ export function validarPermissao(niveisPermitidos) {
 
     next();
   };
+}
+
+export function validarTransicaoStatusConvite(req, res, next) {
+  const novoStatusId = req.novoStatusId;
+  const conviteStatusId = req.conviteStatusAtual;
+  if (conviteStatusId !== 1 && conviteStatusId !== 4) {
+    throw new ForbiddenError('Convite inválido para alteração');
+  }
+
+  if (conviteStatusId === 1 && novoStatusId !== 2 && novoStatusId !== 6) {
+    throw new ForbiddenError('Status de convite inválido para esse convite');
+  }
+  if (conviteStatusId === 4 && novoStatusId !== 5)
+    throw new ForbiddenError('Status de convite inválido para esse convite');
+
+  next();
 }
 
 // Middlewares para validar acesso do usuario por determinado item
@@ -88,6 +105,24 @@ export async function validarAcessoPorRegistroId(req, res, next) {
   }
 
   req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}
+
+export async function validarAcessoPorConviteId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const conviteId = zodParam.conviteId.parse(req.params.id);
+
+  const convidado = await conviteModel.validarDestinatarioPorConviteId({
+    conviteId,
+    usuarioId,
+  });
+
+  if (!convidado) {
+    throw new NotFoundError('Não foi encontrado o convite com o ID informado');
+  }
+
+  req.conviteStatusAtual = convidado.convite_status_id;
 
   next();
 }

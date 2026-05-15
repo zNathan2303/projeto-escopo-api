@@ -1281,6 +1281,76 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
+  /api/v1/convites/{id}:
+    patch:
+      tags:
+        - Convite
+      summary: Atualiza o status de um convite
+      description: Atualiza o status do convite do usuário autenticado. O destinatário é obtido automaticamente pelo token JWT e só ele pode alterar o status.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - novoStatusId
+              properties:
+                novoStatusId:
+                  type: integer
+                  example: 6
+                  description: Novo status do convite
+      responses:
+        '200':
+          description: Status do convite atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Status do convite atualizado com sucesso
+        '400':
+          description: Transição de status inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Usuário autenticado não é o destinatário do convite
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convite não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
   /api/v1/projeto/{id}/categorias/documentos:
     get:
       tags:
