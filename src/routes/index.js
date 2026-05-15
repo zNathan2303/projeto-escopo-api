@@ -7,6 +7,9 @@ import registroRoutes from './registro.router.js';
 import categoriaRoutes from './categoria.router.js';
 import documentoRoutes from './documento.router.js';
 import comentarioRoutes from './comentario.router.js';
+import reuniaoRoutes from './reuniao.router.js';
+import linkRoutes from './link.router.js';
+import convidadoReuniaoRoutes from './convidado-reuniao.router.js';
 import conviteRoutes from './convite.router.js';
 import notificacaoRoutes from './notificacao.router.js';
 
@@ -20,6 +23,9 @@ router.use(registroRoutes);
 router.use(categoriaRoutes);
 router.use(documentoRoutes);
 router.use(comentarioRoutes);
+router.use(reuniaoRoutes);
+router.use(linkRoutes);
+router.use(convidadoReuniaoRoutes);
 router.use(conviteRoutes);
 router.use(notificacaoRoutes);
 

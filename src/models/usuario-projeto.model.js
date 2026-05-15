@@ -118,3 +118,76 @@ export async function verificarParticipacaoPorDocumentoVersaoId({ usuarioId, doc
 
   return resultado[0];
 }
+
+export async function verificarParticipacaoPorReuniaoId({ usuarioId, reuniaoId }) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT up.nivel_acesso_id
+    FROM usuario_projeto AS up
+    JOIN projeto AS p
+      ON p.id = up.projeto_id
+    JOIN reuniao AS r
+      ON r.projeto_id = p.id
+    JOIN usuario AS u
+      ON u.id = up.usuario_id
+    WHERE up.usuario_id = ?
+      AND r.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
+    `,
+    [usuarioId, reuniaoId],
+  );
+
+  return resultado[0];
+}
+
+export async function verificarParticipacaoPorLinkId({ usuarioId, linkId }) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT up.nivel_acesso_id
+    FROM usuario_projeto AS up
+    JOIN projeto AS p
+      ON p.id = up.projeto_id
+    JOIN reuniao AS r
+      ON r.projeto_id = p.id
+    JOIN link AS l
+      ON l.reuniao_id = r.id
+    JOIN usuario AS u
+      ON u.id = up.usuario_id
+    WHERE up.usuario_id = ?
+      AND l.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
+    `,
+    [usuarioId, linkId],
+  );
+
+  return resultado[0];
+}
+
+export async function verificarParticipacaoPorConvidadoReuniaoId({
+  usuarioId,
+  convidadoReuniaoId,
+}) {
+  const [resultado] = await knex.raw(
+    `
+    SELECT up.nivel_acesso_id
+    FROM usuario_projeto AS up
+    JOIN projeto AS p
+      ON p.id = up.projeto_id
+    JOIN reuniao AS r
+      ON r.projeto_id = p.id
+    JOIN convidado_reuniao AS cr
+      ON cr.reuniao_id = r.id
+    JOIN usuario AS u
+      ON u.id = up.usuario_id
+    WHERE up.usuario_id = ?
+      AND cr.id = ?
+      AND u.status = true
+      AND p.deletado_em IS NULL
+    `,
+    [usuarioId, convidadoReuniaoId],
+  );
+
+  return resultado[0];
+}

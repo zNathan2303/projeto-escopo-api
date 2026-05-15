@@ -1354,7 +1354,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/projeto/{projetoId}/participantes:
+  /api/v1/projeto/{id}/participantes:
     get:
       tags:
         - Projeto
@@ -1362,7 +1362,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: projetoId
+        - name: id
           in: path
           required: true
           schema:
@@ -1636,7 +1636,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/reuniao/{reuniao_id}/titulo:
+  /api/v1/reuniao/{id}/titulo:
     patch:
       tags:
         - Reunião
@@ -1644,7 +1644,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1704,7 +1704,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/reuniao/{reuniao_id}:
+  /api/v1/reuniao/{id}/transcricao:
+    patch:
+      tags:
+        - Reunião
+      summary: Atualiza a transcrição de uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transcricao
+              properties:
+                transcricao:
+                  type: string
+                  example: Transcrição da reunião
+                  minLength: 1
+                  maxLength: 10000
+      responses:
+        '204':
+          description: Transcrição atualizada
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Reunião não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/reuniao/{id}:
     get:
       tags:
         - Reunião
@@ -1712,7 +1780,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1749,16 +1817,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-
-  /api/v1/reuniao/{reuniao_id}/link:
-    post:
+    delete:
       tags:
         - Reunião
+      summary: Exclui uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      responses:
+        '204':
+          description: Reunião excluída
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Reunião não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/reuniao/{id}/link:
+    post:
+      tags:
+        - Link (Reunião)
       summary: Adiciona um link adicional a uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1809,21 +1917,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/{reuniao_id}/link/{link_id}:
+  /api/v1/reuniao/link/{id}:
     patch:
       tags:
-        - Reunião
+        - Link (Reunião)
       summary: Atualiza o link de uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID da reunião
-        - name: link_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1888,15 +1990,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/link/{link_id}:
     delete:
       tags:
-        - Reunião
+        - Link (Reunião)
       summary: Remove um link de reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: link_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1929,15 +2030,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/{reuniao_id}/convidado:
+  /api/v1/reuniao/{id}/convidado:
     post:
       tags:
-        - Reunião
+        - Convidado (Reunião)
       summary: Adiciona um convidado a uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -1993,6 +2094,106 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/reuniao/convidado/{id}:
+    delete:
+      tags:
+        - Convidado (Reunião)
+      summary: Remove um convidado de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convidado de reunião
+      responses:
+        '204':
+          description: Convidado excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convidado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    put:
+      tags:
+        - Convidado (Reunião)
+      summary: Atualiza um convidado de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convidado de reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                  minLength: 1
+                  maxLength: 100
+                cargo:
+                  type: string
+                  example: Desenvolvedor
+                  maxLength: 100
+      responses:
+        '204':
+          description: Convidado atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convidado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErroCampos'
         '500':
           description: Erro interno do servidor
@@ -2000,15 +2201,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/{reuniao_id}/usuario:
+  /api/v1/reuniao/{id}/usuario:
     post:
       tags:
-        - Reunião
+        - Usuário (Reunião)
       summary: Adiciona um usuário a uma reunião
       security:
         - bearerAuth: []
       parameters:
-        - name: reuniao_id
+        - name: id
           in: path
           required: true
           schema:
@@ -2836,7 +3037,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/documento/{documento_id}/comentarios:
+  /api/v1/documento/{id}/comentarios:
     get:
       tags:
         - Comentário
@@ -2844,7 +3045,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: documento_id
+        - name: id
           in: path
           required: true
           schema:
@@ -2878,7 +3079,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/documento/{documento_id}/comentario:
+  /api/v1/documento/{id}/comentario:
     post:
       tags:
         - Comentário
@@ -2886,7 +3087,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: documento_id
+        - name: id
           in: path
           required: true
           schema:
