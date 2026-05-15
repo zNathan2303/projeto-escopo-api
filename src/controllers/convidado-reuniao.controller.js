@@ -4,7 +4,7 @@ import * as zodParam from '../utils/zod-param.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import ApiError from '../errors/ApiError.js';
 
-const criarConvidadoSchema = z.object({
+const convidadoSchema = z.object({
   nome: z
     .string({ error: 'Deve ser uma String' })
     .min(1, { error: 'Mínimo 1 caractere' })
@@ -20,11 +20,26 @@ const criarConvidadoSchema = z.object({
 
 export async function criarConvidado({ requestBody, reuniaoIdParam }) {
   const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
-  const { cargo, nome } = criarConvidadoSchema.parse(requestBody);
+  const { cargo, nome } = convidadoSchema.parse(requestBody);
 
   const resultadoBanco = await convidadoReuniaoModel.criar({ cargo, nome, reuniaoId });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível criar o convidado');
+  }
+}
+
+export async function atualizarConvidado({ requestBody, convidadoIdParam }) {
+  const convidadoId = zodParam.convidadoReuniaoId.parse(convidadoIdParam);
+  const { cargo, nome } = convidadoSchema.parse(requestBody);
+
+  const resultadoBanco = await convidadoReuniaoModel.atualizar({
+    cargo,
+    convidadoId,
+    nome,
+  });
+
+  if (resultadoBanco.affectedRows === 0) {
+    throw new ApiError('Não foi possível atualizar o convidado');
   }
 }

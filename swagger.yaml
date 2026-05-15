@@ -1865,6 +1865,71 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/reuniao/convidado/{id}:
+    put:
+      tags:
+        - Convidado (Reunião)
+      summary: Atualiza um convidado de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convidado de reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                  minLength: 1
+                  maxLength: 100
+                cargo:
+                  type: string
+                  example: Desenvolvedor
+                  maxLength: 100
+      responses:
+        '204':
+          description: Convidado atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convidado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErroCampos'
         '500':
           description: Erro interno do servidor

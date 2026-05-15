@@ -11,3 +11,16 @@ export async function criar({ nome, cargo, reuniaoId }) {
 
   return resultado; // Contém affectedRows e insertId
 }
+
+export async function atualizar({ convidadoId, nome, cargo }) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE convidado_reuniao
+    SET nome = ?, cargo = ?
+    WHERE id = ?
+    `,
+    [nome, cargo, convidadoId],
+  );
+
+  return resultado;
+}

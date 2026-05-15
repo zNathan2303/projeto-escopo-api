@@ -24,6 +24,10 @@ export const reuniaoId = z.coerce
   .number({ error: 'O ID de reunião deve ser um número' })
   .positive({ error: 'O ID de reunião deve ser positivo' });
 
+export const convidadoReuniaoId = z.coerce
+  .number({ error: 'O ID do convidado de reunião deve ser um número' })
+  .positive({ error: 'O ID do convidado de reunião deve ser positivo' });
+
 export const linkId = z.coerce
   .number({ error: 'O ID do link deve ser um número' })
   .positive({ error: 'O ID do link deve ser positivo' });
