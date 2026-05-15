@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { validarToken, validarAcessoPorNotificacaoId } from '../middlewares/auth.js';
-// import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 import * as notificacaoController from '../controllers/notificacao.controller.js';
 
 const router = Router();

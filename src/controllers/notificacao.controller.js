@@ -1,9 +1,5 @@
-import z from 'zod';
 import * as notificacaoModel from '../models/notificacao.model.js';
-import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
-import NotFoundError from '../errors/NotFoundError.js';
 import * as zodParam from '../utils/zod-param.js';
-import BadRequestError from '../errors/BadRequestError.js';
 import ApiError from '../errors/ApiError.js';
 
 export async function obterNotificacoesPorUsuarioId(usuarioId) {

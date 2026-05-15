@@ -97,7 +97,7 @@ export async function validarAcessoPorNotificacaoId(req, res, next) {
   const usuarioId = req.usuario.id;
   const notificacaoId = zodParam.notificacaoId.parse(req.params.notificacaoId);
 
-  const notificado = await notificacaoModel.verificarRemetentePorNotificacaoId({
+  const notificado = await notificacaoModel.verificarUsuarioPorNotificacaoId({
     notificacaoId,
     usuarioId,
   });
