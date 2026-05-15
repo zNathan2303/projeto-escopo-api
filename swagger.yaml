@@ -1303,9 +1303,9 @@ paths:
             schema:
               type: object
               required:
-                - novoStatusId
+                - novo_status_id
               properties:
-                novoStatusId:
+                novo_status_id:
                   type: integer
                   example: 6
                   description: Novo status do convite

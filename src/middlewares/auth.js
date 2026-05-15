@@ -5,6 +5,7 @@ import * as zodParam from '../utils/zod-param.js';
 import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 export function validarToken(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -35,22 +36,6 @@ export function validarPermissao(niveisPermitidos) {
 
     next();
   };
-}
-
-export function validarTransicaoStatusConvite(req, res, next) {
-  const novoStatusId = req.novoStatusId;
-  const conviteStatusId = req.conviteStatusAtual;
-  if (conviteStatusId !== 1 && conviteStatusId !== 4) {
-    throw new ForbiddenError('Convite inválido para alteração');
-  }
-
-  if (conviteStatusId === 1 && novoStatusId !== 2 && novoStatusId !== 6) {
-    throw new ForbiddenError('Status de convite inválido para esse convite');
-  }
-  if (conviteStatusId === 4 && novoStatusId !== 5)
-    throw new ForbiddenError('Status de convite inválido para esse convite');
-
-  next();
 }
 
 // Middlewares para validar acesso do usuario por determinado item
@@ -111,7 +96,7 @@ export async function validarAcessoPorRegistroId(req, res, next) {
 
 export async function validarAcessoPorConviteId(req, res, next) {
   const usuarioId = req.usuario.id;
-  const conviteId = zodParam.conviteId.parse(req.params.id);
+  const conviteId = zodParam.conviteId.parse(req.params.conviteId);
 
   const convidado = await conviteModel.validarDestinatarioPorConviteId({
     conviteId,
@@ -122,7 +107,7 @@ export async function validarAcessoPorConviteId(req, res, next) {
     throw new NotFoundError('Não foi encontrado o convite com o ID informado');
   }
 
-  req.conviteStatusAtual = convidado.convite_status_id;
+  req.conviteStatusAtualId = convidado.convite_status_id;
 
   next();
 }
