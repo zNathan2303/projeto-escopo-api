@@ -12,6 +12,7 @@ import linkRoutes from './link.router.js';
 import convidadoReuniaoRoutes from './convidado-reuniao.router.js';
 import conviteRoutes from './convite.router.js';
 import notificacaoRoutes from './notificacao.router.js';
+import usuarioConvidadoRoutes from './usuario-convidado.router.js';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use(linkRoutes);
 router.use(convidadoReuniaoRoutes);
 router.use(conviteRoutes);
 router.use(notificacaoRoutes);
+router.use(usuarioConvidadoRoutes);
 
 export default router;
