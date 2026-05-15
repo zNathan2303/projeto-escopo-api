@@ -3,6 +3,7 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 import * as zodParam from '../utils/zod-param.js';
 import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
+import * as notificacaoModel from '../models/notificacao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 export function validarToken(req, res, next) {
@@ -88,6 +89,22 @@ export async function validarAcessoPorRegistroId(req, res, next) {
   }
 
   req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}
+
+export async function validarAcessoPorNotificacaoId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const notificacaoId = zodParam.notificacaoId.parse(req.params.notificacaoId);
+
+  const notificado = await notificacaoModel.verificarUsuarioPorNotificacaoId({
+    notificacaoId,
+    usuarioId,
+  });
+
+  if (!notificado) {
+    throw new NotFoundError('Não foi encontrado a notificação com o ID informado');
+  }
 
   next();
 }

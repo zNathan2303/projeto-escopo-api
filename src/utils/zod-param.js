@@ -19,3 +19,11 @@ export const documentoId = z.coerce
 export const documentoVersaoId = z.coerce
   .number({ error: 'O ID de versão de documento deve ser um número' })
   .positive({ error: 'O ID de versão de documento deve ser positivo' });
+
+export const usuarioId = z.coerce
+  .number({ error: 'O ID de usuário deve ser um número' })
+  .positive({ error: 'O ID de usuário deve ser positivo' });
+
+export const notificacaoId = z.coerce
+  .number({ error: 'O ID de notificação deve ser um número' })
+  .positive({ error: 'O ID de notificação deve ser positivo' });
