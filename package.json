@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "start": "node ./src/server.js",
     "dev": "node --env-file=.env --watch ./src/server.js",
     "format": "prettier --write ."
@@ -29,6 +29,7 @@
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.5.0",
-    "prettier": "3.8.3"
+    "prettier": "3.8.3",
+    "vitest": "^4.1.6"
   }
 }
