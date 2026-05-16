@@ -1067,22 +1067,8 @@ paths:
             type: integer
           description: ID da notificação
       responses:
-        '200':
+        '204':
           description: Notificação atualizada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notificacao'
-              examples:
-                notificacaoAtualizada:
-                  summary: Exemplo de notificação marcada como lida
-                  value:
-                    id: 1
-                    descricao: 'Ana Livia comentou no documento "Documento de Requisitos"'
-                    data: '2026-05-05 21:21:16'
-                    aberto: 1
-                    comentario_id: 1
-                    documento_id: 1
         '401':
           description: Não autenticado
           content:
@@ -1400,7 +1386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
-  /api/v1/convites/{id}:
+  /api/v1/convite/{id}:
     patch:
       tags:
         - Convite
@@ -1429,22 +1415,55 @@ paths:
                   example: 6
                   description: Novo status do convite
       responses:
-        '200':
+        '204':
           description: Status do convite atualizado com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Status do convite atualizado com sucesso
         '400':
           description: Transição de status inválida
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Usuário autenticado não é o destinatário do convite
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Convite não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Convite
+      summary: Exclui um convite
+      description: Exclui o convite do usuário autenticado. O destinatário é obtido automaticamente pelo token JWT e só ele pode apagar o convite.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do convite
+      responses:
+        '204':
+          description: Convite excluído com sucesso
         '401':
           description: Não autenticado
           content:
@@ -2260,6 +2279,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/reuniao/usuario/{id}:
+    delete:
+      tags:
+        - Usuário (Reunião)
+      summary: Remove um usuário de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do usuário de reunião
+      responses:
+        '204':
+          description: Usuário excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Usuário de reunião não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '500':
           description: Erro interno do servidor
           content:

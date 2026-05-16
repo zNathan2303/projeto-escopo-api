@@ -6,7 +6,6 @@ import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
 import * as notificacaoModel from '../models/notificacao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
-import BadRequestError from '../errors/BadRequestError.js';
 
 export function validarToken(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -110,6 +109,9 @@ export async function validarAcessoPorConviteId(req, res, next) {
 
   req.conviteStatusAtualId = convidado.convite_status_id;
 
+  next();
+}
+
 export async function validarAcessoPorNotificacaoId(req, res, next) {
   const usuarioId = req.usuario.id;
   const notificacaoId = zodParam.notificacaoId.parse(req.params.notificacaoId);
@@ -209,6 +211,26 @@ export async function validarAcessoPorConvidadoReuniaoId(req, res, next) {
 
   if (!participacao) {
     throw new NotFoundError('Não foi encontrado o convidado com o ID informado');
+  }
+
+  req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
+
+  next();
+}
+
+export async function validarAcessoPorReuniaoUsuarioId(req, res, next) {
+  const usuarioId = req.usuario.id;
+  const reuniaoUsuarioId = zodParam.reuniaoUsuarioId.parse(req.params.reuniaoUsuarioId);
+
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorReuniaoUsuarioId({
+    reuniaoUsuarioId,
+    usuarioId,
+  });
+
+  if (!participacao) {
+    throw new NotFoundError(
+      'Não foi encontrada a relação entre reunião e usuário com o ID informado',
+    );
   }
 
   req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
