@@ -1067,22 +1067,8 @@ paths:
             type: integer
           description: ID da notificação
       responses:
-        '200':
+        '204':
           description: Notificação atualizada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notificacao'
-              examples:
-                notificacaoAtualizada:
-                  summary: Exemplo de notificação marcada como lida
-                  value:
-                    id: 1
-                    descricao: 'Ana Livia comentou no documento "Documento de Requisitos"'
-                    data: '2026-05-05 21:21:16'
-                    aberto: 1
-                    comentario_id: 1
-                    documento_id: 1
         '401':
           description: Não autenticado
           content:
@@ -1429,16 +1415,8 @@ paths:
                   example: 6
                   description: Novo status do convite
       responses:
-        '200':
+        '204':
           description: Status do convite atualizado com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Status do convite atualizado com sucesso
         '400':
           description: Transição de status inválida
           content:

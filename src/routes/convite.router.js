@@ -1,10 +1,5 @@
 import { Router } from 'express';
-import {
-  validarToken,
-  validarAcessoPorConviteId,
-  validarAcessoPorProjetoId,
-  validarPermissao,
-} from '../middlewares/auth.js';
+import { validarToken, validarAcessoPorConviteId, validarPermissao } from '../middlewares/auth.js';
 import { obterDadosPorConviteId } from '../middlewares/entities/convite.middleware.js';
 import { validarAcessoPorProjetoIdDeConvite } from '../middlewares/entities/projeto.middleware.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';

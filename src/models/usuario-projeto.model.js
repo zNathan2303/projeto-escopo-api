@@ -192,7 +192,7 @@ export async function verificarParticipacaoPorConvidadoReuniaoId({
   return resultado[0];
 }
 
-export async function verificarParticipacaoPorUsuarioReuniaoId({ usuarioId, usuarioReuniaoId }) {
+export async function verificarParticipacaoPorReuniaoUsuarioId({ usuarioId, reuniaoUsuarioId }) {
   const [resultado] = await knex.raw(
     `
     SELECT up.nivel_acesso_id
@@ -210,7 +210,7 @@ export async function verificarParticipacaoPorUsuarioReuniaoId({ usuarioId, usua
       AND u.status = true
       AND p.deletado_em IS NULL
     `,
-    [usuarioId, usuarioReuniaoId],
+    [usuarioId, reuniaoUsuarioId],
   );
 
   return resultado[0];

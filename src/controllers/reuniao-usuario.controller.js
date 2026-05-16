@@ -1,8 +1,9 @@
 import z from 'zod';
-import * as usuarioConvidadoModel from '../models/usuario-convidado.model.js';
+import * as reuniaoUsuarioModel from '../models/reuniao-usuario.model.js';
 import * as zodParam from '../utils/zod-param.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import ApiError from '../errors/ApiError.js';
 
 const usuarioConvidadoSchema = z.object({
   cargo: z.preprocess(
@@ -17,11 +18,11 @@ const usuarioConvidadoSchema = z.object({
     .positive({ error: 'O ID de usuário deve ser positivo' }),
 });
 
-export async function criarUsuarioConvidado({ requestBody, reuniaoIdParam }) {
+export async function criarRelacaoEmReuniaoUsuario({ requestBody, reuniaoIdParam }) {
   const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
   const { cargo, usuario_id } = usuarioConvidadoSchema.parse(requestBody);
 
-  const resultadoBanco = await usuarioConvidadoModel.criar({
+  const resultadoBanco = await reuniaoUsuarioModel.criar({
     cargo,
     reuniaoId,
     usuarioId: usuario_id,
@@ -32,12 +33,12 @@ export async function criarUsuarioConvidado({ requestBody, reuniaoIdParam }) {
   }
 }
 
-export async function excluirUsuarioConvidado(usuarioConvidadoIdParam) {
-  const usuarioConvidadoId = zodParam.usuarioConvidadoIdParam.parse(usuarioConvidadoIdParam);
+export async function excluirReuniaoUsuario(reuniaoUsuarioIdParam) {
+  const reuniaoUsuarioId = zodParam.reuniaoUsuarioId.parse(reuniaoUsuarioIdParam);
 
-  const resultadoBanco = await usuarioConvidadoModel.excluir(usuarioConvidadoId);
+  const resultadoBanco = await reuniaoUsuarioModel.excluir(reuniaoUsuarioId);
 
   if (resultadoBanco.affectedRows === 0) {
-    throw new BadRequestError('Registro de usuário convidado não encontrado');
+    throw new ApiError('Não foi possível excluir a relação entre reunião e usuário');
   }
 }

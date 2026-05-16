@@ -1,8 +1,8 @@
-import * as usuarioConvidadoController from '../controllers/usuario-convidado.controller.js';
+import * as reuniaoUsuarioController from '../controllers/reuniao-usuario.controller.js';
 import { Router } from 'express';
 import {
   validarAcessoPorReuniaoId,
-  validarAcessoPorUsuarioReuniaoId,
+  validarAcessoPorReuniaoUsuarioId,
   validarPermissao,
   validarToken,
 } from '../middlewares/auth.js';
@@ -19,7 +19,7 @@ router.post(
   async (req, res) => {
     const { reuniaoId } = req.params;
 
-    await usuarioConvidadoController.criarUsuarioConvidado({
+    await reuniaoUsuarioController.criarRelacaoEmReuniaoUsuario({
       requestBody: req.body,
       reuniaoIdParam: reuniaoId,
     });
@@ -29,14 +29,14 @@ router.post(
 );
 
 router.delete(
-  '/reuniao/usuario/:usuarioReuniaoId',
+  '/reuniao/usuario/:reuniaoUsuarioId',
   validarToken,
-  validarAcessoPorUsuarioReuniaoId,
+  validarAcessoPorReuniaoUsuarioId,
   validarPermissao([1, 2]),
   async (req, res) => {
-    const { usuarioReuniaoId } = req.params;
+    const { reuniaoUsuarioId } = req.params;
 
-    await usuarioConvidadoController.excluirUsuarioConvidado(usuarioReuniaoId);
+    await reuniaoUsuarioController.excluirReuniaoUsuario(reuniaoUsuarioId);
 
     res.sendStatus(204);
   },

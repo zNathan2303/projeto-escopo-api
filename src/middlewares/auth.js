@@ -218,17 +218,19 @@ export async function validarAcessoPorConvidadoReuniaoId(req, res, next) {
   next();
 }
 
-export async function validarAcessoPorUsuarioReuniaoId(req, res, next) {
+export async function validarAcessoPorReuniaoUsuarioId(req, res, next) {
   const usuarioId = req.usuario.id;
-  const usuarioReuniaoId = zodParam.usuarioReuniaoId.parse(req.params.usuarioReuniaoId);
+  const reuniaoUsuarioId = zodParam.reuniaoUsuarioId.parse(req.params.reuniaoUsuarioId);
 
-  const participacao = await usuarioProjetoModel.verificarParticipacaoPorUsuarioReuniaoId({
-    usuarioReuniaoId,
+  const participacao = await usuarioProjetoModel.verificarParticipacaoPorReuniaoUsuarioId({
+    reuniaoUsuarioId,
     usuarioId,
   });
 
   if (!participacao) {
-    throw new NotFoundError('Não foi encontrado o usuário reunião com o ID informado');
+    throw new NotFoundError(
+      'Não foi encontrada a relação entre reunião e usuário com o ID informado',
+    );
   }
 
   req.usuario.nivelAcessoId = participacao.nivel_acesso_id;
