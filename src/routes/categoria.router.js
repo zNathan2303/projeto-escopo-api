@@ -19,9 +19,12 @@ router.post(
   async (req, res) => {
     const { projetoId } = req.params;
 
-    await categoriaController.criarCategoria({ projetoIdParam: projetoId, requestBody: req.body });
+    const categoria = await categoriaController.criarCategoria({
+      projetoIdParam: projetoId,
+      requestBody: req.body,
+    });
 
-    res.sendStatus(201);
+    res.status(201).json(categoria);
   },
 );
 

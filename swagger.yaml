@@ -1104,6 +1104,14 @@ paths:
       responses:
         '201':
           description: Projeto criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '401':
           description: Não autenticado
           content:
@@ -1618,6 +1626,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReuniaoResponse'
+              examples:
+                criado:
+                  summary: Exemplo de resposta
+                  value:
+                    id: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -1900,6 +1913,14 @@ paths:
       responses:
         '201':
           description: Link adicional criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2084,6 +2105,14 @@ paths:
       responses:
         '201':
           description: Convidado adicionado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2249,6 +2278,14 @@ paths:
       responses:
         '201':
           description: Usuário adicionado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2360,6 +2397,14 @@ paths:
       responses:
         '201':
           description: Registro criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2645,6 +2690,14 @@ paths:
       responses:
         '201':
           description: Categoria criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2741,6 +2794,14 @@ paths:
       responses:
         '201':
           description: Documento criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -2973,6 +3034,14 @@ paths:
       responses:
         '201':
           description: Nova versão criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:
@@ -3162,6 +3231,14 @@ paths:
       responses:
         '201':
           description: Comentário criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
         '400':
           description: Requisição mal formulada
           content:

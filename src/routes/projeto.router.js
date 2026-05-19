@@ -6,9 +6,12 @@ import * as projetoController from '../controllers/projeto.controller.js';
 const router = Router();
 
 router.post('/projeto', validarToken, verificarSeRequestTemBody, async (req, res) => {
-  await projetoController.criarProjeto({ requestBody: req.body, usuarioId: req.usuario.id });
+  const projeto = await projetoController.criarProjeto({
+    requestBody: req.body,
+    usuarioId: req.usuario.id,
+  });
 
-  res.sendStatus(201);
+  res.status(201).json(projeto);
 });
 
 router.get('/projetos', validarToken, async (req, res) => {

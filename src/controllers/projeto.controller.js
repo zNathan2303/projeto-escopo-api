@@ -41,7 +41,7 @@ export async function criarProjeto({ requestBody, usuarioId }) {
 
   const niveisAcessoIDs = await obterIDsDeNiveisAcesso(knex);
 
-  await knex.transaction(async (trx) => {
+  return await knex.transaction(async (trx) => {
     const resultadoBanco = await projetoModel.criar(
       {
         titulo: projeto.titulo,
@@ -51,16 +51,20 @@ export async function criarProjeto({ requestBody, usuarioId }) {
       trx,
     );
 
+    if (resultadoBanco.affectedRows === 0) {
+      throw new ApiError('Não foi possível criar o projeto');
+    }
+
     const projetoId = resultadoBanco.insertId;
 
     if (projeto.integrantes === undefined || projeto.integrantes.length === 0) {
-      return;
+      return { id: projetoId };
     }
 
     const integrantes = projeto.integrantes.filter((integrante) => integrante.id !== usuarioId);
 
     if (integrantes.length === 0) {
-      return;
+      return { id: projetoId };
     }
 
     const algumIntegranteInvalido = projeto.integrantes.some(
@@ -89,6 +93,8 @@ export async function criarProjeto({ requestBody, usuarioId }) {
 
       throw error;
     }
+
+    return { id: projetoId };
   });
 }
 

@@ -32,9 +32,12 @@ router.post(
   async (req, res) => {
     const { projetoId } = req.params;
 
-    await reuniaoController.criarReuniao({ projetoIdParam: projetoId, requestBody: req.body });
+    const reuniao = await reuniaoController.criarReuniao({
+      projetoIdParam: projetoId,
+      requestBody: req.body,
+    });
 
-    res.sendStatus(201);
+    res.status(201).json(reuniao);
   },
 );
 

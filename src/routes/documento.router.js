@@ -37,12 +37,12 @@ router.post(
   async (req, res) => {
     const { categoriaId } = req.params;
 
-    await documentoController.criarDocumento({
+    const documento = await documentoController.criarDocumento({
       categoriaIdParam: categoriaId,
       requestBody: req.body,
     });
 
-    res.sendStatus(201);
+    res.status(201).json(documento);
   },
 );
 
@@ -100,13 +100,13 @@ router.post(
   async (req, res) => {
     const { documentoId } = req.params;
 
-    await documentoController.criarNovaVersao({
+    const documento = await documentoController.criarNovaVersao({
       documentoIdParam: documentoId,
       requestBody: req.body,
       usuarioId: req.usuario.id,
     });
 
-    res.sendStatus(201);
+    res.status(201).json(documento);
   },
 );
 

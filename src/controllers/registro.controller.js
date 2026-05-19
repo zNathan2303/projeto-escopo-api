@@ -3,7 +3,6 @@ import * as registroModel from '../models/registro.model.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import * as zodParam from '../utils/zod-param.js';
-import BadRequestError from '../errors/BadRequestError.js';
 import ApiError from '../errors/ApiError.js';
 
 const tituloField = z
@@ -53,9 +52,7 @@ export async function criarRegistro({ requestBody, projetoIdParam, usuarioId }) 
     throw new ApiError('Não foi possível criar o projeto');
   }
 
-  const registroId = resultadoBanco.insertId;
-
-  return { id: registroId };
+  return { id: resultadoBanco.insertId };
 }
 
 export async function atualizarTituloDeRegistro({ requestBody, registroIdParam }) {

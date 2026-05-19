@@ -19,6 +19,8 @@ export async function criarCategoria({ requestBody, projetoIdParam }) {
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Projeto não criado');
   }
+
+  return { id: resultadoBanco.insertId };
 }
 
 export async function desativarCategoria(categoriaIdParam) {
