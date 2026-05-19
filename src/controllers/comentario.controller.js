@@ -62,7 +62,7 @@ export async function criarComentario({ requestBody, documentoId, usuarioId }) {
       tipoComentarioId: comentario_tipo_id,
     });
 
-    return resultadoBanco.insertId;
+    return { id: resultadoBanco.insertId };
   } catch (error) {
     // Erro lançado pela procedure
     if (error.sqlState === '45000') {

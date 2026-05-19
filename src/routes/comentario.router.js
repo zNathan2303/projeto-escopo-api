@@ -13,13 +13,13 @@ router.post(
   async (req, res) => {
     const { documentoId } = req.params;
 
-    await comentarioController.criarComentario({
+    const comentario = await comentarioController.criarComentario({
       documentoId,
       requestBody: req.body,
       usuarioId: req.usuario.id,
     });
 
-    res.sendStatus(201);
+    res.status(201).json(comentario);
   },
 );
 

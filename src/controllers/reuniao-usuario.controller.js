@@ -31,6 +31,8 @@ export async function criarRelacaoEmReuniaoUsuario({ requestBody, reuniaoIdParam
   if (resultadoBanco.affectedRows === 0) {
     throw new BadRequestError('Usuário não encontrado');
   }
+
+  return { id: resultadoBanco.insertId };
 }
 
 export async function excluirReuniaoUsuario(reuniaoUsuarioIdParam) {

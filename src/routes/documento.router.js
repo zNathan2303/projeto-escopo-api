@@ -106,7 +106,7 @@ router.post(
       usuarioId: req.usuario.id,
     });
 
-    res.status(200).json(documento);
+    res.status(201).json(documento);
   },
 );
 
