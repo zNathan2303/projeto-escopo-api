@@ -36,6 +36,8 @@ export async function criarLink({ requestBody, reuniaoIdParam }) {
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível criar o link para a reunião');
   }
+
+  return { id: resultadoBanco.insertId };
 }
 
 export async function atualizarLink({ requestBody, linkIdParam }) {

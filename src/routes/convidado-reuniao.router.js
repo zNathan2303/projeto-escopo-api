@@ -19,12 +19,12 @@ router.post(
   async (req, res) => {
     const { reuniaoId } = req.params;
 
-    await convidadoReuniaoController.criarConvidado({
+    const convidado = await convidadoReuniaoController.criarConvidado({
       requestBody: req.body,
       reuniaoIdParam: reuniaoId,
     });
 
-    res.sendStatus(201);
+    res.status(201).json(convidado);
   },
 );
 

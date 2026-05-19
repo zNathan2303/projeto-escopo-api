@@ -19,9 +19,12 @@ router.post(
   async (req, res) => {
     const { reuniaoId } = req.params;
 
-    await linkController.criarLink({ requestBody: req.body, reuniaoIdParam: reuniaoId });
+    const link = await linkController.criarLink({
+      requestBody: req.body,
+      reuniaoIdParam: reuniaoId,
+    });
 
-    res.sendStatus(201);
+    res.status(201).json(link);
   },
 );
 

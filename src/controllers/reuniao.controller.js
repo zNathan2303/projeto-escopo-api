@@ -42,6 +42,8 @@ export async function criarReuniao({ requestBody, projetoIdParam }) {
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível criar a reunião');
   }
+
+  return { id: resultadoBanco.insertId };
 }
 
 export async function atualizarTitulo({ requestBody, reuniaoIdParam }) {

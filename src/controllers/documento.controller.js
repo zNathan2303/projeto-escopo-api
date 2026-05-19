@@ -46,9 +46,7 @@ export async function criarDocumento({ requestBody, categoriaIdParam }) {
     throw new ApiError('O documento não foi criado');
   }
 
-  const { insertId } = resultadoBanco;
-
-  return insertId;
+  return { id: resultadoBanco.insertId };
 }
 
 export async function obterDetalhesDeDocumento(documentoIdParam) {
@@ -101,9 +99,7 @@ export async function criarNovaVersao({ requestBody, documentoIdParam, usuarioId
     throw new ApiError('Não foi possível criar uma nova versão do conteúdo');
   }
 
-  const { insertId } = resultadoBanco;
-
-  return { id: insertId };
+  return { id: resultadoBanco.insertId };
 }
 
 export async function obterHistoricoDeVersoes(documentoIdParam) {
