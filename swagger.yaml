@@ -213,6 +213,9 @@ components:
         email:
           type: string
           example: marcos@email.com
+        convite_id:
+          type: integer
+          example: 1
         projeto_id:
           type: integer
           example: 1
