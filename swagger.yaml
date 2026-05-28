@@ -544,6 +544,75 @@ components:
           items:
             $ref: '#/components/schemas/IntegranteProjeto'
 
+    ProjetoUpdateRequest:
+      type: object
+      required:
+        - titulo
+      properties:
+        titulo:
+          type: string
+          example: Meu Projeto
+          minLength: 1
+          maxLength: 100
+        descricao:
+          type: string
+          example: Descrição do projeto
+        integrantes:
+          type: object
+          properties:
+            atuais:
+              type: array
+              items:
+                type: object
+                properties:
+                  usuario_projeto_id:
+                    type: integer
+                    example: 1
+                  nivel_acesso_id:
+                    type: integer
+                    example: 2
+            excluidos:
+              type: array
+              items:
+                type: object
+                properties:
+                  usuario_projeto_id:
+                    type: integer
+                    example: 1
+        convites:
+          type: object
+          properties:
+            adicionais:
+              type: array
+              items:
+                type: object
+                properties:
+                  usuario_id:
+                    type: integer
+                    example: 1
+                  nivel_acesso_id:
+                    type: integer
+                    example: 2
+            pendentes:
+              type: array
+              items:
+                type: object
+                properties:
+                  convite_id:
+                    type: integer
+                    example: 1
+                  nivel_acesso_id:
+                    type: integer
+                    example: 2
+            excluidos:
+              type: array
+              items:
+                type: object
+                properties:
+                  convite_id:
+                    type: integer
+                    example: 1
+
     Comentario:
       type: object
       properties:
@@ -1223,7 +1292,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjetoRequest'
+              $ref: '#/components/schemas/ProjetoUpdateRequest'
       responses:
         '200':
           description: Projeto atualizado

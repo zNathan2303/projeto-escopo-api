@@ -2,6 +2,7 @@ import z from 'zod';
 import * as projetoModel from '../models/projeto.model.js';
 import * as conviteModel from '../models/convite.model.js';
 import * as usuarioModel from '../models/usuario.model.js';
+import * as usuarioProjetoModel from '../models/usuario-projeto.model.js';
 import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
@@ -33,6 +34,85 @@ const projetoSchema = z.object({
       }),
       { error: 'Integrantes deve ser um array' },
     )
+    .optional(),
+});
+
+const projetoUpdateSchema = z.object({
+  titulo: z
+    .string({ error: 'Deve ser uma String' })
+    .trim()
+    .min(1, { error: 'Mínimo 1 caractere' })
+    .max(100, { error: 'Máximo 100 caracteres' }),
+  descricao: z.preprocess(
+    transformarUndefinedOuStringVaziaEmNull,
+    z.string({ error: 'Deve ser uma String' }).nullable(),
+  ),
+  integrantes: z
+    .object({
+      atuais: z
+        .array(
+          z.object({
+            usuario_projeto_id: z
+              .number({ error: 'O usuario_projeto_id deve ser um número' })
+              .positive({ error: 'O usuario_projeto_id deve ser positivo' }),
+            nivel_acesso_id: z
+              .number({ error: 'O ID de nível de acesso deve ser um número' })
+              .positive({ error: 'O ID de nível de acesso deve ser positivo' }),
+          }),
+          { error: 'Integrantes atuais deve ser um array' },
+        )
+        .optional(),
+      excluidos: z
+        .array(
+          z.object({
+            usuario_projeto_id: z
+              .number({ error: 'O usuario_projeto_id deve ser um número' })
+              .positive({ error: 'O usuario_projeto_id deve ser positivo' }),
+          }),
+          { error: 'Integrantes excluídos deve ser um array' },
+        )
+        .optional(),
+    })
+    .optional(),
+  convites: z
+    .object({
+      adicionais: z
+        .array(
+          z.object({
+            usuario_id: z
+              .number({ error: 'O usuario_id deve ser um número' })
+              .positive({ error: 'O usuario_id deve ser positivo' }),
+            nivel_acesso_id: z
+              .number({ error: 'O ID de nível de acesso deve ser um número' })
+              .positive({ error: 'O ID de nível de acesso deve ser positivo' }),
+          }),
+          { error: 'Convites adicionais deve ser um array' },
+        )
+        .optional(),
+      pendentes: z
+        .array(
+          z.object({
+            convite_id: z
+              .number({ error: 'O convite_id deve ser um número' })
+              .positive({ error: 'O convite_id deve ser positivo' }),
+            nivel_acesso_id: z
+              .number({ error: 'O ID de nível de acesso deve ser um número' })
+              .positive({ error: 'O ID de nível de acesso deve ser positivo' }),
+          }),
+          { error: 'Convites pendentes deve ser um array' },
+        )
+        .optional(),
+      excluidos: z
+        .array(
+          z.object({
+            convite_id: z
+              .number({ error: 'O convite_id deve ser um número' })
+              .positive({ error: 'O convite_id deve ser positivo' }),
+          }),
+          { error: 'Convites excluídos deve ser um array' },
+        )
+        .optional(),
+    })
     .optional(),
 });
 
@@ -118,9 +198,9 @@ export async function obterDetalhesDeUmProjeto({ projetoIdParam, usuarioId }) {
 
 export async function atualizarProjeto({ requestBody, projetoIdParam, usuarioId }) {
   const projetoId = zodParam.projetoId.parse(projetoIdParam);
-  const projeto = projetoSchema.parse(requestBody);
+  const projeto = projetoUpdateSchema.parse(requestBody);
 
-  const { descricao, titulo, integrantes } = projeto;
+  const { descricao, titulo, integrantes, convites } = projeto;
 
   return await knex.transaction(async (trx) => {
     const resultadoBanco = await projetoModel.atualizar({ descricao, titulo, projetoId }, trx);
@@ -129,21 +209,27 @@ export async function atualizarProjeto({ requestBody, projetoIdParam, usuarioId 
       throw new ApiError('Não foi possível atualizar o projeto');
     }
 
-    const convitesAEnviar = [];
+    const operacoesDeIntegrantes = [];
 
-    for (const integrante of integrantes) {
-      const convite = {
-        destinatarioId: integrante.id,
-        nivelAcessoId: integrante.nivel_acesso_id,
-        projetoId: projetoId,
-        remetenteId: usuarioId,
-      };
-
-      convitesAEnviar.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));
+    if (integrantes.atuais) {
+      operacoesDeIntegrantes.push(
+        usuarioProjetoModel.atualizarNivelDeAcessoPorUsuarioProjetoId({ nivelAcessoId }),
+      );
     }
 
+    // for (const integrante of integrantes) {
+    //   const convite = {
+    //     destinatarioId: integrante.id,
+    //     nivelAcessoId: integrante.nivel_acesso_id,
+    //     projetoId: projetoId,
+    //     remetenteId: usuarioId,
+    //   };
+
+    //   operacoesDeIntegrantes.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));
+    // }
+
     try {
-      await Promise.all(convitesAEnviar);
+      await Promise.all(operacoesDeIntegrantes);
     } catch (error) {
       if (error.code === 45000) {
         throw new NotFoundError(

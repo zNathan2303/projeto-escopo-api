@@ -215,3 +215,20 @@ export async function verificarParticipacaoPorReuniaoUsuarioId({ usuarioId, reun
 
   return resultado[0];
 }
+
+export async function atualizarNivelDeAcessoPorUsuarioProjetoId({
+  nivelAcessoId,
+  usuarioProjetoId,
+}) {
+  const [resultado] = await knex.raw(
+    `
+    UPDATE usuario_projeto
+      SET nivel_acesso_id = ?
+    WHERE id = ?
+      AND nivel_acesso_id != ?
+    `,
+    [nivelAcessoId, usuarioProjetoId, nivelAcessoId],
+  );
+
+  return resultado; // Contém affectedRows
+}
