@@ -7,18 +7,6 @@ export async function criarVarios(convites, db = knex) {
   return IDs;
 }
 
-export async function enviarDinamicamentePorProcedure(
-  { projetoId, destinatarioId, nivelAcessoId, remetenteId },
-  db = knex,
-) {
-  await db.raw(
-    `
-    CALL enviar_convite(?, ?, ?, ?)
-    `,
-    [projetoId, destinatarioId, nivelAcessoId, remetenteId],
-  );
-}
-
 export async function obterAtivosDeUsuario(usuarioId) {
   const [convites] = await knex.raw(
     `
@@ -100,4 +88,26 @@ export async function obterPorConviteId(conviteId) {
   );
 
   return resultado[0];
+}
+
+export async function excluirVarios({ convitesIds, projetoId }, db = knex) {
+  const convitesExcluidos = await db('convite')
+    .where({ projeto_id: projetoId })
+    .whereIn('id', convitesIds)
+    .del();
+
+  return convitesExcluidos;
+}
+
+export async function atualizarNivelDeAcesso({ conviteId, nivelAcessoId }, db = knex) {
+  const [resultado] = await db.raw(
+    `
+    UPDATE convite
+    SET nivel_acesso_id = ?
+    WHERE id = ?
+    `,
+    [nivelAcessoId, conviteId],
+  );
+
+  return resultado;
 }
