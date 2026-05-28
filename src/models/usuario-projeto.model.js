@@ -216,18 +216,31 @@ export async function verificarParticipacaoPorReuniaoUsuarioId({ usuarioId, reun
   return resultado[0];
 }
 
-export async function atualizarNivelDeAcessoPorUsuarioProjetoId({
-  nivelAcessoId,
-  usuarioProjetoId,
-}) {
-  const [resultado] = await knex.raw(
+export async function atualizarNivelDeAcessoPorUsuarioProjetoId(
+  { nivelAcessoId, usuarioProjetoId, projetoId },
+  db = knex,
+) {
+  const [resultado] = await db.raw(
     `
     UPDATE usuario_projeto
       SET nivel_acesso_id = ?
     WHERE id = ?
-      AND nivel_acesso_id != ?
+      AND projeto_id = ?
     `,
-    [nivelAcessoId, usuarioProjetoId, nivelAcessoId],
+    [nivelAcessoId, usuarioProjetoId, projetoId],
+  );
+
+  return resultado; // Contém affectedRows
+}
+
+export async function excluirUsuarioProjeto({ usuarioProjetoId, projetoId }, db = knex) {
+  const [resultado] = await db.raw(
+    `
+    DELETE FROM usuario_projeto
+    WHERE id = ?
+      AND projeto_id = ?
+    `,
+    [usuarioProjetoId, projetoId],
   );
 
   return resultado; // Contém affectedRows

@@ -7,7 +7,6 @@ import knex from '../config/database.js';
 import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import NotFoundError from '../errors/NotFoundError.js';
-import ForbiddenError from '../errors/ForbiddenError.js';
 import { obterIDsDeNiveisAcesso } from '../cache/nivel-acesso.cache.js';
 import * as zodParam from '../utils/zod-param.js';
 import ApiError from '../errors/ApiError.js';
@@ -202,6 +201,8 @@ export async function atualizarProjeto({ requestBody, projetoIdParam, usuarioId 
 
   const { descricao, titulo, integrantes, convites } = projeto;
 
+  const niveisAcessoIDs = await obterIDsDeNiveisAcesso(knex);
+
   return await knex.transaction(async (trx) => {
     const resultadoBanco = await projetoModel.atualizar({ descricao, titulo, projetoId }, trx);
 
@@ -209,36 +210,125 @@ export async function atualizarProjeto({ requestBody, projetoIdParam, usuarioId 
       throw new ApiError('Não foi possível atualizar o projeto');
     }
 
-    const operacoesDeIntegrantes = [];
+    const operacoesDeIntegrantesEConvites = [];
 
-    if (integrantes.atuais) {
-      operacoesDeIntegrantes.push(
-        usuarioProjetoModel.atualizarNivelDeAcessoPorUsuarioProjetoId({ nivelAcessoId }),
-      );
-    }
-
-    // for (const integrante of integrantes) {
-    //   const convite = {
-    //     destinatarioId: integrante.id,
-    //     nivelAcessoId: integrante.nivel_acesso_id,
-    //     projetoId: projetoId,
-    //     remetenteId: usuarioId,
-    //   };
-
-    //   operacoesDeIntegrantes.push(conviteModel.enviarDinamicamentePorProcedure(convite, trx));
-    // }
-
-    try {
-      await Promise.all(operacoesDeIntegrantes);
-    } catch (error) {
-      if (error.code === 45000) {
-        throw new NotFoundError(
-          'Um ou mais dos campos inseridos para o integrante não foram encontrados',
+    if (integrantes) {
+      if (integrantes.atuais) {
+        const algumIntegranteInvalido = integrantes.atuais.some(
+          (integrante) => !niveisAcessoIDs.includes(integrante.nivel_acesso_id),
         );
+
+        if (algumIntegranteInvalido) {
+          throw new BadRequestError(
+            'Algum ID de nível de acesso de um integrante atual é inválido',
+          );
+        }
+
+        for (const integranteAtual of integrantes.atuais) {
+          operacoesDeIntegrantesEConvites.push(
+            usuarioProjetoModel.atualizarNivelDeAcessoPorUsuarioProjetoId(
+              {
+                nivelAcessoId: integranteAtual.nivel_acesso_id,
+                usuarioProjetoId: integranteAtual.usuario_projeto_id,
+                projetoId,
+              },
+              trx,
+            ),
+          );
+        }
       }
 
-      if (error.code === 45001) {
-        throw new ForbiddenError('Não possui permissão para acessar esse recurso');
+      if (integrantes.excluidos) {
+        for (const integranteExcluido of integrantes.excluidos) {
+          operacoesDeIntegrantesEConvites.push(
+            usuarioProjetoModel.excluirUsuarioProjeto(
+              { usuarioProjetoId: integranteExcluido.usuario_projeto_id, projetoId },
+              trx,
+            ),
+          );
+        }
+      }
+    }
+
+    if (convites) {
+      if (convites.adicionais) {
+        const algumConviteInvalido = convites.adicionais.some(
+          (convite) => !niveisAcessoIDs.includes(convite.nivel_acesso_id),
+        );
+
+        if (algumConviteInvalido) {
+          throw new BadRequestError(
+            'Algum ID de nível de acesso de um convite adicional é inválido',
+          );
+        }
+
+        const convitesFormatados = convites.adicionais.map((convite) => {
+          return {
+            projeto_id: projetoId,
+            destinatario_id: convite.usuario_id,
+            nivel_acesso_id: convite.nivel_acesso_id,
+            remetente_id: usuarioId,
+          };
+        });
+
+        await conviteModel.criarVarios(convitesFormatados, trx);
+      }
+
+      if (convites.excluidos) {
+        const conviteIdExcluidos = convites.excluidos.map((convite) => convite.convite_id);
+
+        const quantidadeConvitesExcluidos = await conviteModel.excluirVarios(
+          { convitesIds: conviteIdExcluidos, projetoId },
+          trx,
+        );
+
+        if (quantidadeConvitesExcluidos !== convites.excluidos.length) {
+          throw new ApiError(
+            `Convites que eram para ser excluídos: ${convites.excluidos.length}. Convites que foram excluídos: ${quantidadeConvitesExcluidos}. Operações desfeitas.`,
+          );
+        }
+      }
+
+      if (convites.pendentes) {
+        const algumConviteInvalido = convites.pendentes.some(
+          (convite) => !niveisAcessoIDs.includes(convite.nivel_acesso_id),
+        );
+
+        if (algumConviteInvalido) {
+          throw new BadRequestError(
+            'Algum ID de nível de acesso de um convite pendente é inválido',
+          );
+        }
+
+        for (const convitePendente of convites.pendentes) {
+          operacoesDeIntegrantesEConvites.push(
+            conviteModel.atualizarNivelDeAcesso(
+              {
+                conviteId: convitePendente.convite_id,
+                nivelAcessoId: convitePendente.nivel_acesso_id,
+              },
+              trx,
+            ),
+          );
+        }
+      }
+    }
+
+    try {
+      const resultadosBanco = await Promise.all(operacoesDeIntegrantesEConvites);
+
+      const existeAffectedRowsZero = resultadosBanco.some(
+        (resultado) => resultado.affectedRows === 0,
+      );
+
+      if (existeAffectedRowsZero) {
+        throw new BadRequestError(
+          'Não foi possível realizar alguma operação. Operações realizadas desfeitas.',
+        );
+      }
+    } catch (error) {
+      if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+        throw new BadRequestError('Algum ID de integrante enviado é inválido');
       }
 
       throw error;
