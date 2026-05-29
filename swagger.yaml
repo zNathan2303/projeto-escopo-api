@@ -919,18 +919,15 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
-                - foto_perfil
+                - foto
               properties:
-                foto_perfil:
+                foto:
                   type: string
-                  format: uri
-                  minLength: 1
-                  maxLength: 512
-                  example: https://example.com/image.jpg
+                  format: binary
       responses:
         '204':
           description: Foto de perfil alterada

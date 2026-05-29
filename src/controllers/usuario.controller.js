@@ -1,9 +1,10 @@
 import z from 'zod';
 import * as usuarioModel from '../models/usuario.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
-import { transformarUndefinedOuStringVaziaEmNull } from '../utils/formatacoes.js';
 import bcrypt from 'bcrypt';
 import BadRequestError from '../errors/BadRequestError.js';
+import * as UPLOAD from './upload/controller-upload-azure.js';
+import ApiError from '../errors/ApiError.js';
 
 const senha = z
   .string({ error: 'Deve ser uma String' })
@@ -24,16 +25,6 @@ const nomeSchema = z.object({
     .max(100, { error: 'Máximo 100 caracteres' }),
 });
 
-const fotoPerfilSchema = z.object({
-  foto_perfil: z.preprocess(
-    transformarUndefinedOuStringVaziaEmNull,
-    z
-      .string({ error: 'Deve ser uma String' })
-      .max(512, { error: 'Máximo 512 caracteres' })
-      .nullable(),
-  ),
-});
-
 const emailCampo = z
   .string({ error: 'Deve ser uma String' })
   .trim()
@@ -48,10 +39,20 @@ export async function atualizarNomeDoUsuario(usuario, requestBody) {
   await usuarioModel.atualizarNome(usuario.id, nome);
 }
 
-export async function atualizarFotoPerfilDoUsuario(usuario, requestBody) {
-  const { foto_perfil } = fotoPerfilSchema.parse(requestBody);
+export async function atualizarFotoPerfilDoUsuario(usuarioId, foto) {
+  if (!foto) {
+    throw new BadRequestError('Foto não enviada');
+  }
 
-  await usuarioModel.atualizarFotoPerfil(usuario.id, foto_perfil);
+  const urlFoto = await UPLOAD.uploadFiles(foto);
+
+  if (!urlFoto) {
+    throw new ApiError('Não foi possível criar a URL da foto');
+  }
+
+  await usuarioModel.atualizarFotoPerfil(usuarioId, urlFoto);
+
+  return { url: urlFoto };
 }
 
 export async function desativarUsuario(usuario) {

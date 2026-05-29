@@ -2,6 +2,17 @@ import { Router } from 'express';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 import { validarToken } from '../middlewares/auth.js';
 import * as usuarioController from '../controllers/usuario.controller.js';
+import multer from 'multer';
+
+// Configuração para o multer enviar o arquivo de imagem
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+});
+
+// Instância para criar um objeto upload
+const upload = multer();
 
 const router = Router();
 
@@ -10,9 +21,11 @@ router.patch('/usuario/nome', validarToken, verificarSeRequestTemBody, async (re
   res.sendStatus(204);
 });
 
-router.patch('/usuario/foto-perfil', validarToken, verificarSeRequestTemBody, async (req, res) => {
-  await usuarioController.atualizarFotoPerfilDoUsuario(req.usuario, req.body);
-  res.sendStatus(204);
+router.patch('/usuario/foto-perfil', validarToken, upload.single('foto'), async (req, res) => {
+  const foto = req.file;
+
+  const resultado = await usuarioController.atualizarFotoPerfilDoUsuario(req.usuario.id, foto);
+  res.status(200).json(resultado);
 });
 
 router.delete('/usuario', validarToken, async (req, res) => {
