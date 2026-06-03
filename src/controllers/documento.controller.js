@@ -5,6 +5,7 @@ import * as documentoVersaoModel from '../models/documento-versao.model.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import * as zodParam from '../utils/zod-param.js';
 import ApiError from '../errors/ApiError.js';
+import knex from '../config/database.js';
 
 const documentoSchema = z.object({
   titulo: z
@@ -36,17 +37,34 @@ export async function obterDocumentosDeCadaCategoria(projetoIdParam, usuarioId) 
   return projetoComCategoriasEDocumentos;
 }
 
-export async function criarDocumento({ requestBody, categoriaIdParam }) {
+export async function criarDocumento({ requestBody, categoriaIdParam, usuarioId }) {
   const { titulo } = documentoSchema.parse(requestBody);
   const categoriaId = zodParam.categoriaId.parse(categoriaIdParam);
 
-  const resultadoBanco = await documentoModel.criar({ categoriaId, titulo });
+  return await knex.transaction(async (trx) => {
+    const resultadoOperacaoDocumento = await documentoModel.criar({ categoriaId, titulo }, trx);
 
-  if (resultadoBanco.affectedRows === 0) {
-    throw new ApiError('O documento não foi criado');
-  }
+    if (resultadoOperacaoDocumento.affectedRows === 0) {
+      throw new ApiError('Não foi possível criar o documento');
+    }
 
-  return { id: resultadoBanco.insertId };
+    const documentoId = resultadoOperacaoDocumento.insertId;
+
+    const resultadoOperacaoVersao = await documentoVersaoModel.criar(
+      {
+        conteudo: '',
+        criadorId: usuarioId,
+        documentoId,
+      },
+      trx,
+    );
+
+    if (resultadoOperacaoVersao.affectedRows === 0) {
+      throw new ApiError('Não foi possível criar o documento');
+    }
+
+    return { id: documentoId };
+  });
 }
 
 export async function obterDetalhesDeDocumento(documentoIdParam) {

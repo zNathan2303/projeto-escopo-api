@@ -40,6 +40,7 @@ router.post(
     const documento = await documentoController.criarDocumento({
       categoriaIdParam: categoriaId,
       requestBody: req.body,
+      usuarioId: req.usuario.id,
     });
 
     res.status(201).json(documento);

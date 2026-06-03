@@ -1,7 +1,7 @@
 import knex from '../config/database.js';
 
-export async function criar({ conteudo, criadorId, documentoId }) {
-  const [resultado] = await knex.raw(
+export async function criar({ conteudo, criadorId, documentoId }, db = knex) {
+  const [resultado] = await db.raw(
     `
     INSERT INTO documento_versao (conteudo, criador_id, documento_id)
     VALUES (?, ?, ?)
