@@ -3,12 +3,15 @@ import knex from '../config/database.js';
 export async function obterTodasPorUsuarioId(usuarioId) {
   const [notificacoes] = await knex.raw(
     `
-    SELECT 
-      notificacao.id, notificacao.descricao, notificacao.data, notificacao.aberto, notificacao.comentario_id, comentario.documento_id
-    FROM notificacao
-    JOIN comentario
-      ON notificacao.comentario_id = comentario.id
-    WHERE usuario_id = ?
+    SELECT
+      n.id, n.descricao, n.data, n.aberto, n.comentario_id, c.documento_id
+    FROM notificacao AS n
+    JOIN comentario AS c
+      ON n.comentario_id = c.id
+    JOIN documento
+     ON documento.id = c.documento_id
+    WHERE n.usuario_id = ?
+      AND documento.deletado_em IS NULL
     `,
     [usuarioId],
   );
