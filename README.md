@@ -121,4 +121,4 @@ Banco de dados:
 - [Nathan](https://www.linkedin.com/in/nathandasilvacosta/) - Backend
 - [Edvan](https://www.linkedin.com/in/edvan-alves/) - Banco de dados e Frontend
 - [Samara](https://www.linkedin.com/in/samara-santos-b92160397/) - Frontend
-- André - Frontend
+- [André](https://www.linkedin.com/in/andr%C3%A9-roberto-tavares-03a36b316/) - Frontend
