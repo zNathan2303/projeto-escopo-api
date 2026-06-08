@@ -11,7 +11,10 @@ export async function obterModificadosRecentemente(usuarioId) {
       MAX(ultima_edicao) AS ultima_edicao
     FROM vw_documentos_recentes
     WHERE criador_id = ?
-    GROUP BY id
+    GROUP BY
+      id, projeto, categoria, documento
+    ORDER BY
+      MAX(ultima_edicao) DESC
     LIMIT 5
     `,
     [usuarioId],
