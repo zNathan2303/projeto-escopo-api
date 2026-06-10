@@ -35,10 +35,11 @@ export async function criarRelacaoEmReuniaoUsuario({ requestBody, reuniaoIdParam
   return { id: resultadoBanco.insertId };
 }
 
-export async function excluirReuniaoUsuario(reuniaoUsuarioIdParam) {
-  const reuniaoUsuarioId = zodParam.reuniaoUsuarioId.parse(reuniaoUsuarioIdParam);
+export async function excluirReuniaoUsuario({ usuarioIdParam, reuniaoIdParam }) {
+  const reuniaoId = zodParam.reuniaoId.parse(reuniaoIdParam);
+  const usuarioId = zodParam.usuarioId.parse(usuarioIdParam);
 
-  const resultadoBanco = await reuniaoUsuarioModel.excluir(reuniaoUsuarioId);
+  const resultadoBanco = await reuniaoUsuarioModel.excluir({ reuniaoId, usuarioId });
 
   if (resultadoBanco.affectedRows === 0) {
     throw new ApiError('Não foi possível excluir a relação entre reunião e usuário');

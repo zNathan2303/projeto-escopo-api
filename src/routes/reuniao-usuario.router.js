@@ -1,11 +1,6 @@
 import * as reuniaoUsuarioController from '../controllers/reuniao-usuario.controller.js';
 import { Router } from 'express';
-import {
-  validarAcessoPorReuniaoId,
-  validarAcessoPorReuniaoUsuarioId,
-  validarPermissao,
-  validarToken,
-} from '../middlewares/auth.js';
+import { validarAcessoPorReuniaoId, validarPermissao, validarToken } from '../middlewares/auth.js';
 import { verificarSeRequestTemBody } from '../middlewares/request-body.js';
 
 const router = Router();
@@ -29,14 +24,17 @@ router.post(
 );
 
 router.delete(
-  '/reuniao/usuario/:reuniaoUsuarioId',
+  '/reuniao/:reuniaoId/usuario/:usuarioId',
   validarToken,
-  validarAcessoPorReuniaoUsuarioId,
+  validarAcessoPorReuniaoId,
   validarPermissao([1, 2]),
   async (req, res) => {
-    const { reuniaoUsuarioId } = req.params;
+    const { reuniaoId, usuarioId } = req.params;
 
-    await reuniaoUsuarioController.excluirReuniaoUsuario(reuniaoUsuarioId);
+    await reuniaoUsuarioController.excluirReuniaoUsuario({
+      reuniaoIdParam: reuniaoId,
+      usuarioIdParam: usuarioId,
+    });
 
     res.sendStatus(204);
   },

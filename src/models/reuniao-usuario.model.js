@@ -13,13 +13,14 @@ export async function criar({ reuniaoId, usuarioId, cargo }) {
   return resultado;
 }
 
-export async function excluir(reuniaoUsuarioId) {
+export async function excluir({ reuniaoId, usuarioId }) {
   const [resultado] = await knex.raw(
     `
     DELETE FROM reuniao_usuario
-    WHERE id = ?
+    WHERE reuniao_id = ?
+      AND usuario_id = ?
     `,
-    [reuniaoUsuarioId],
+    [reuniaoId, usuarioId],
   );
 
   return resultado;
