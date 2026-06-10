@@ -4,14 +4,19 @@ export async function obterTodasPorUsuarioId(usuarioId) {
   const [notificacoes] = await knex.raw(
     `
     SELECT
-      n.id, n.descricao, n.data, n.aberto, n.comentario_id, c.documento_id
+      n.id, n.descricao, n.data, n.aberto, n.comentario_id, c.documento_id,
+      d.titulo AS documento_titulo, projeto.id AS projeto_id, projeto.titulo AS projeto_titulo
     FROM notificacao AS n
     JOIN comentario AS c
       ON n.comentario_id = c.id
-    JOIN documento
-     ON documento.id = c.documento_id
+    JOIN documento AS d
+     ON d.id = c.documento_id
+    JOIN categoria
+      ON categoria.id = d.categoria_id
+    JOIN projeto
+      ON projeto.id = categoria.projeto_id
     WHERE n.usuario_id = ?
-      AND documento.deletado_em IS NULL
+      AND d.deletado_em IS NULL
     `,
     [usuarioId],
   );
