@@ -699,6 +699,15 @@ components:
         documento_id:
           type: integer
           example: 1
+        documento_titulo:
+          type: string
+          example: 'Documento de Requisitos'
+        projeto_id:
+          type: integer
+          example: 1
+        projeto_titulo:
+          type: string
+          example: 'Projeto teste1'
 
 paths:
   /api/v1/auth/cadastrar:
@@ -1091,16 +1100,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notificacao'
-              examples:
-                notificacoesUsuario:
-                  summary: Exemplo de lista de notificações
-                  value:
-                    - id: 1
-                      descricao: 'Ana Livia comentou no documento "Documento de Requisitos"'
-                      data: '2026-05-05 21:21:16'
-                      aberto: 0
-                      comentario_id: 1
-                      documento_id: 1
         '401':
           description: Não autenticado
           content:
@@ -2391,7 +2390,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-  /api/v1/reuniao/usuario/{id}:
+  /api/v1/reuniao/{reuniaoId}/usuario/{usuarioId}:
     delete:
       tags:
         - Usuário (Reunião)
@@ -2399,12 +2398,18 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: reuniaoId
           in: path
           required: true
           schema:
             type: integer
-          description: ID do usuário de reunião
+          description: ID da reunião
+        - name: usuarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do usuário a ser removido da reunião
       responses:
         '204':
           description: Usuário excluído
