@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 8080;
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 const corsOptions = {
-  origin: '*',
+  origin: process.env.FRONTEND_URL,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 };
 
