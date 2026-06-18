@@ -80,6 +80,12 @@ Crie um arquivo `.env` baseado no `.env.example`.
 
 ```env
 JWT_SECRET=
+AZURE_STORAGE_TOKEN=
+AZURE_STORAGE_CONTAINER=
+AZURE_STORAGE_ACCOUNT=
+FRONTEND_URL=
+DB_HOST=
+DB_PORT=
 DB_USER=
 DB_PASSWORD=
 ```
@@ -95,10 +101,6 @@ Servidor disponível em:
 ```txt
 http://localhost:8080
 ```
-
-## Endpoints
-
-Swagger online disponível em: https://projeto-escopo-api.onrender.com/api/docs/
 
 ## Convenções do projeto
 
