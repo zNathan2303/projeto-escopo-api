@@ -119,6 +119,10 @@ Banco de dados:
 
 - https://github.com/EdvanOAlves/projeto-escopo-db
 
+Mobile:
+
+- https://github.com/AndreRT77/projeto-escopo-mobile
+
 ## Equipe
 
 - [Nathan](https://www.linkedin.com/in/nathandasilvacosta/) - Backend
