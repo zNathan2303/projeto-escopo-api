@@ -104,9 +104,10 @@ http://localhost:8080
 
 ## Convenções do projeto
 
-- Commits seguindo Conventional Commits
-- Validação utilizando Zod
-- Retorno de erros usando `throw new 'NomeDaClasse('mensagem de erro')'`, sendo as classes específicas em `errors/`, deixando o handler de erros global cuidar do retorno da mensagem de erro
+- Commits seguindo Conventional Commits.
+- Validação utilizando Zod.
+- Retorno de erros usando `throw new 'NomeDaClasse('mensagem de erro')'`, sendo as classes específicas em `errors/`, deixando o handler de erros global cuidar do retorno da mensagem de erro.
+- Validação de usuários e níveis de acesso utilizando middlewares nos endpoints.
 
 ## Repositórios relacionados
 
